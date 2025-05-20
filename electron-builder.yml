@@ -17,11 +17,3 @@ win:
         - nsis # tạo installer .exe dạng NSIS
     icon: resources/icon.ico # nếu bạn có icon cho app
 
-nsis:
-    oneClick: false # false để hiện wizard, true để cài nhanh
-    perMachine: false # cài cho user hiện tại
-    allowElevation: true # cho phép nâng quyền khi cài
-    allowToChangeInstallationDirectory: true # cho phép chọn folder cài
-    createDesktopShortcut: true
-    createStartMenuShortcut: true
-    shortcutName: 'MyNextronApp'
