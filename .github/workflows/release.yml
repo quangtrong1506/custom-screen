@@ -4,6 +4,8 @@ on:
     push:
         branches:
             - '**' # mọi nhánh
+permissions:
+    contents: write
 
 jobs:
     build:
