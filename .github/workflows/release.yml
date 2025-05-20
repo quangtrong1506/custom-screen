@@ -106,13 +106,20 @@ jobs:
           mkdir release
           find all-artifacts -type f -exec cp {} release/ \;
 
-      - name: Get version tag
-        id: get_version
-        run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+      - name: Ensure tag exists
+        id: ensure_tag
+        run: |
+          TAG=$(git describe --tags --abbrev=0 2>/dev/null || true)
+          if [ -z "$TAG" ]; then
+            TAG="v$(date +'%Y.%m.%d.%H%M')"
+            git tag $TAG
+            git push origin $TAG
+          fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: Release ${{ steps.get_version.outputs.tag }}
-          tag_name: ${{ steps.get_version.outputs.tag }}
+          name: Release ${{ steps.ensure_tag.outputs.tag }}
+          tag_name: ${{ steps.ensure_tag.outputs.tag }}
           files: release/*
