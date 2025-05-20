@@ -10,8 +10,7 @@
         "dev": "nextron",
         "build": "nextron build",
         "postinstall": "electron-builder install-app-deps",
-        "version:patch": "standard-version --release-as patch",
-        "release": "pnpm build && pnpm build:electron"
+        "version:patch": "standard-version --release-as patch"
     },
     "devDependencies": {
         "@types/node": "^20.11.16",
