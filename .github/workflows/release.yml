@@ -36,20 +36,22 @@ jobs:
             - name: Build App
               run: npm run build
 
-            - name: Show build output (debug)
-              run: ls -R dist/
+            - name: Get version tag (main only)
+              if: github.ref == 'refs/heads/main'
+              id: get_version
+              run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
 
             - name: GitHub Release (main only)
               if: github.ref == 'refs/heads/main'
               uses: softprops/action-gh-release@v2
               with:
-                  name: 'Release ${{ github.ref_name }}'
-                  tag_name: ${{ github.ref_name }}
+                  name: Release ${{ steps.get_version.outputs.tag }}
+                  tag_name: ${{ steps.get_version.outputs.tag }}
                   files: |
-                      dist/win-unpacked/*.exe
-                      dist/win-unpacked/*.dmg
-                      dist/win-unpacked/*.blockmap
-                      dist/win-unpacked/*.yml
+                      dist/*.exe
+                      dist/*.dmg
+                      dist/*.blockmap
+                      dist/*.yml
 
             - name: Upload Preview Build (non-main only)
               if: github.ref != 'refs/heads/main'
