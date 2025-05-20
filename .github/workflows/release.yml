@@ -96,17 +96,39 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Download all artifacts
+      - name: Download Linux artifacts
         uses: actions/download-artifact@v4
         with:
-          path: all-artifacts
+          name: linux-artifacts
+          path: all-artifacts/linux
+
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-artifacts
+          path: all-artifacts/macos
+
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-artifacts
+          path: all-artifacts/windows
 
       - name: Flatten artifacts
         run: |
           mkdir release
-          find all-artifacts -type f -exec cp {} release/ \;
+          cp -r all-artifacts/linux/* release/
+          cp -r all-artifacts/macos/* release/
+          cp -r all-artifacts/windows/* release/
 
-      - name: Get version tag
+      - name: Bump version and push tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          npm version patch -m "chore: bump version to %s"
+          git push --follow-tags
+
+      - name: Get latest tag
         id: get_version
         run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
 
