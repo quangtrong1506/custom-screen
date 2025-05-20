@@ -3,12 +3,13 @@ name: Build Electron App
 on:
   push:
     branches:
-      - '**'
+      - '**' # mọi nhánh
 
 permissions:
   contents: write
 
 jobs:
+  # Build trên Linux (AppImage + exe)
   build-linux:
     runs-on: ubuntu-latest
     env:
@@ -21,7 +22,7 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      - name: Install Wine (Ubuntu 22.04+)
+      - name: Install Wine (để build .exe trên Linux)
         run: |
           sudo dpkg --add-architecture i386
           sudo mkdir -pm755 /etc/apt/keyrings
@@ -30,11 +31,9 @@ jobs:
           sudo apt update
           sudo apt install --install-recommends winehq-stable -y
 
-      - run: wine --version
-
       - run: npm install
 
-      - name: Build on Linux (AppImage + exe)
+      - name: Build App (AppImage + exe)
         run: npm run build
 
       - uses: actions/upload-artifact@v4
@@ -42,6 +41,7 @@ jobs:
           name: linux-artifacts
           path: dist/
 
+  # Build trên macOS (.dmg)
   build-macos:
     runs-on: macos-latest
     env:
@@ -56,14 +56,15 @@ jobs:
 
       - run: npm install
 
-      - name: Build on macOS (.dmg)
-        run: npm run build
+      - name: Build macOS App (.dmg)
+        run: npm run build:mac
 
       - uses: actions/upload-artifact@v4
         with:
           name: macos-artifacts
           path: dist/
 
+  # Build trên Windows (.exe + installer)
   build-windows:
     runs-on: windows-latest
     env:
@@ -78,14 +79,15 @@ jobs:
 
       - run: npm install
 
-      - name: Build on Windows (.exe)
-        run: npm run build
+      - name: Build Windows App (.exe)
+        run: npm run build:win
 
       - uses: actions/upload-artifact@v4
         with:
           name: windows-artifacts
           path: dist/
 
+  # Job Release: gom artifacts, bump version, tạo GitHub Release
   release:
     runs-on: ubuntu-latest
     needs:
@@ -96,30 +98,45 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Download all artifacts
+      - name: Download Linux artifacts
         uses: actions/download-artifact@v4
         with:
-          path: all-artifacts
+          name: linux-artifacts
+          path: all-artifacts/linux
+
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-artifacts
+          path: all-artifacts/macos
+
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-artifacts
+          path: all-artifacts/windows
 
       - name: Flatten artifacts
         run: |
           mkdir release
-          find all-artifacts -type f -exec cp {} release/ \;
+          cp -r all-artifacts/linux/* release/
+          cp -r all-artifacts/macos/* release/
+          cp -r all-artifacts/windows/* release/
 
-      - name: Ensure tag exists
-        id: ensure_tag
+      - name: Bump version and push tag
         run: |
-          TAG=$(git describe --tags --abbrev=0 2>/dev/null || true)
-          if [ -z "$TAG" ]; then
-            TAG="v$(date +'%Y.%m.%d.%H%M')"
-            git tag $TAG
-            git push origin $TAG
-          fi
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          npm version patch -m "chore: bump version to %s"
+          git push --follow-tags
+
+      - name: Get latest tag
+        id: get_version
+        run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: Release ${{ steps.ensure_tag.outputs.tag }}
-          tag_name: ${{ steps.ensure_tag.outputs.tag }}
+          name: Release ${{ steps.get_version.outputs.tag }}
+          tag_name: ${{ steps.get_version.outputs.tag }}
           files: release/*
