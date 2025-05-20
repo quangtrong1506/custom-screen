@@ -1,12 +1,12 @@
-appId: com.example.nextron
-productName: My Nextron App
-copyright: Copyright © 2018 Yoshihide Shiono
+appId: com.example.nextron.test
+productName: My Nextron App (test)
+copyright: Copyright © 2018 Test
 directories:
-  output: dist
-  buildResources: resources
+    output: dist
+    buildResources: resources
 files:
-  - from: .
-    filter:
-      - package.json
-      - app
+    - from: .
+      filter:
+          - package.json
+          - app
 publish: null
