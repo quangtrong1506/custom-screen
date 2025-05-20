@@ -17,4 +17,4 @@ win:
     - nsis # tạo installer .exe dạng NSIS
   icon: resources/icon.ico # nếu bạn có icon cho app
 
-artifactName: '${productName}-setup.${ext}'
+artifactName: '${productName}.setup.${ext}'
