@@ -4,6 +4,7 @@ on:
     push:
         branches:
             - '**' # mọi nhánh
+
 permissions:
     contents: write
 
@@ -35,6 +36,9 @@ jobs:
             - name: Build App
               run: npm run build
 
+            - name: Show build output (debug)
+              run: ls -R dist/
+
             - name: GitHub Release (main only)
               if: github.ref == 'refs/heads/main'
               uses: softprops/action-gh-release@v2
@@ -42,8 +46,10 @@ jobs:
                   name: 'Release ${{ github.ref_name }}'
                   tag_name: ${{ github.ref_name }}
                   files: |
-                      dist/*.exe
-                      dist/*.dmg
+                      dist/win-unpacked/*.exe
+                      dist/win-unpacked/*.dmg
+                      dist/win-unpacked/*.blockmap
+                      dist/win-unpacked/*.yml
 
             - name: Upload Preview Build (non-main only)
               if: github.ref != 'refs/heads/main'
