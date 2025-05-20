@@ -1,62 +1,62 @@
 name: Build Electron App
 
 on:
-    push:
-        branches:
-            - '**' # mọi nhánh
+  push:
+    branches:
+      - '**' # mọi nhánh
 
 permissions:
-    contents: write
+  contents: write
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-      env:
+  build:
+    runs-on: ubuntu-latest
+    env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-            - name: Setup Node
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 20
-                  cache: 'npm'
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: 'npm'
 
-            - name: Install dependencies
-              run: npm install
+      - name: Install dependencies
+        run: npm install
 
-            - name: Bump version (main only)
-              if: github.ref == 'refs/heads/main'
-              run: |
-                  git config user.name "github-actions[bot]"
-                  git config user.email "github-actions[bot]@users.noreply.github.com"
-                  npm run version:patch
-                  git push --follow-tags
+      - name: Bump version (main only)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          npm run version:patch
+          git push --follow-tags
 
-            - name: Build App
-              run: npm run build
+      - name: Build App
+        run: npm run build
 
-            - name: Get version tag (main only)
-              if: github.ref == 'refs/heads/main'
-              id: get_version
-              run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+      - name: Get version tag (main only)
+        if: github.ref == 'refs/heads/main'
+        id: get_version
+        run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
 
-            - name: GitHub Release (main only)
-              if: github.ref == 'refs/heads/main'
-              uses: softprops/action-gh-release@v2
-              with:
-                  name: Release ${{ steps.get_version.outputs.tag }}
-                  tag_name: ${{ steps.get_version.outputs.tag }}
-                  files: |
-                      dist/*.exe
-                      dist/*.dmg
-                      dist/*.blockmap
-                      dist/*.yml
+      - name: GitHub Release (main only)
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ steps.get_version.outputs.tag }}
+          tag_name: ${{ steps.get_version.outputs.tag }}
+          files: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.blockmap
+            dist/*.yml
 
-            - name: Upload Preview Build (non-main only)
-              if: github.ref != 'refs/heads/main'
-              uses: actions/upload-artifact@v4
-              with:
-                  name: preview-build
-                  path: dist/
+      - name: Upload Preview Build (non-main only)
+        if: github.ref != 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-build
+          path: dist/
