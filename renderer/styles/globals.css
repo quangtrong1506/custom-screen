@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+}
+
+@layer components {
+}
+.react-grid-placeholder {
+    background: rgba(255, 255, 255, 0.3) !important; /* Màu nền custom */
+    border: 2px dashed #fff;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+}
