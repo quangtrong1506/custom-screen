@@ -12,7 +12,9 @@ function MyApp({ Component, pageProps }: AppProps) {
             <Head>
                 <title>Cute Skin</title>
             </Head>
-            <Component {...pageProps} />
+            <div onContextMenu={(e) => e.preventDefault()}>
+                <Component {...pageProps} />
+            </div>
         </React.Fragment>
     );
 }
