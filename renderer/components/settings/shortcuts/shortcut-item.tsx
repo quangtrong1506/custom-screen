@@ -22,7 +22,7 @@ export const SettingShortcutItem = () => {
                 <div></div>
             </div>
             <div className="h-full flex items-center">
-                <ThreeDotMenu />
+                <ThreeDotMenu items={[]} />
             </div>
         </div>
     );
