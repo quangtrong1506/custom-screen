@@ -1,49 +1,3 @@
-name: Build Electron App
-
-on:
-  push:
-    branches:
-      - '**'
-
-permissions:
-  contents: write
-
-jobs:
-
-  build-windows:
-    runs-on: windows-latest
-    env:
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
-    steps:
-
-      - uses: actions/checkout@v3
-
-      - name: Set up Git for pushing tags
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git
-
-      - name: Bump version and push tag
-        run: |
-          npm version patch -m "chore: bump version to %s"
-          git push origin --follow-tags
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - run: npm install
-
-      - name: Build on Windows (.exe)
-        run: npm run build
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: windows-artifacts
-          path: dist/
-
   release:
     runs-on: ubuntu-latest
     needs:
@@ -73,3 +27,12 @@ jobs:
           name: Release ${{ steps.get_version.outputs.tag }}
           tag_name: ${{ steps.get_version.outputs.tag }}
           files: release/*
+
+      - name: Cleanup old artifacts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Deleting old artifacts..."
+          gh api repos/${{ github.repository }}/actions/artifacts |
+            jq '.artifacts | sort_by(.created_at) | reverse | .[3:] | .[].id' |
+            xargs -I {} gh api -X DELETE repos/${{ github.repository }}/actions/artifacts/{}
