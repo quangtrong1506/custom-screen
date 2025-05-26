@@ -9,6 +9,29 @@ permissions:
   contents: write
 
 jobs:
+  
+  cleanup-artifacts:
+    runs-on: ubuntu-latest
+    needs: release
+    steps:
+      - name: Delete old artifacts (keep latest 3)
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          echo "Deleting old artifacts..."
+
+          artifacts_json=$(gh api repos/${{ github.repository }}/actions/artifacts)
+          total=$(echo "$artifacts_json" | jq '.artifacts | length')
+
+          echo "Found $total artifacts"
+
+          if [ "$total" -gt 3 ]; then
+            echo "$artifacts_json" | jq '.artifacts | sort_by(.created_at) | reverse | .[3:] | .[].id' | xargs -n1 -I {} gh api -X DELETE repos/${{ github.repository }}/actions/artifacts/{}
+          else
+            echo "Not enough artifacts to delete."
+          fi
+
+
   build-windows:
     runs-on: windows-latest
     env:
@@ -71,23 +94,4 @@ jobs:
           tag_name: ${{ steps.get_version.outputs.tag }}
           files: release/*
 
-  cleanup-artifacts:
-    runs-on: ubuntu-latest
-    needs: release
-    steps:
-      - name: Delete old artifacts (keep latest 3)
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: |
-          echo "Deleting old artifacts..."
-
-          artifacts_json=$(gh api repos/${{ github.repository }}/actions/artifacts)
-          total=$(echo "$artifacts_json" | jq '.artifacts | length')
-
-          echo "Found $total artifacts"
-
-          if [ "$total" -gt 3 ]; then
-            echo "$artifacts_json" | jq '.artifacts | sort_by(.created_at) | reverse | .[3:] | .[].id' | xargs -n1 -I {} gh api -X DELETE repos/${{ github.repository }}/actions/artifacts/{}
-          else
-            echo "Not enough artifacts to delete."
-          fi
+  
