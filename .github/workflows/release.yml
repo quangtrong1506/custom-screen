@@ -16,14 +16,18 @@ jobs:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
 
-      - name: Bump version and push tag
+      - uses: actions/checkout@v3
+
+      - name: Set up Git for pushing tags
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          npm version patch -m "chore: bump version to %s"
-          git push --follow-tags
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git
 
-      - uses: actions/checkout@v3
+      - name: Bump version and push tag
+        run: |
+          npm version patch -m "chore: bump version to %s"
+          git push origin --follow-tags
 
       - uses: actions/setup-node@v3
         with:
