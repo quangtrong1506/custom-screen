@@ -52,6 +52,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Cleanup old artifacts
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          echo "Deleting old artifacts..."
+          gh api repos/${{ github.repository }}/actions/artifacts |
+            jq '.artifacts | sort_by(.created_at) | reverse | .[3:] | .[].id' |
+            xargs -I {} gh api -X DELETE repos/${{ github.repository }}/actions/artifacts/{}
+
       - name: Download Windows artifacts
         uses: actions/download-artifact@v4
         with:
@@ -73,12 +82,3 @@ jobs:
           name: Release ${{ steps.get_version.outputs.tag }}
           tag_name: ${{ steps.get_version.outputs.tag }}
           files: release/*
-
-      - name: Cleanup old artifacts
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: |
-          echo "Deleting old artifacts..."
-          gh api repos/${{ github.repository }}/actions/artifacts |
-            jq '.artifacts | sort_by(.created_at) | reverse | .[3:] | .[].id' |
-            xargs -I {} gh api -X DELETE repos/${{ github.repository }}/actions/artifacts/{}
