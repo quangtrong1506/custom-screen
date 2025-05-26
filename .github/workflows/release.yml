@@ -77,7 +77,7 @@ jobs:
     steps:
       - name: Delete old artifacts (keep latest 3)
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           echo "Deleting old artifacts..."
 
