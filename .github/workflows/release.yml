@@ -18,13 +18,24 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Cleanup old artifacts
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           echo "Deleting old artifacts..."
-          gh api repos/${{ github.repository }}/actions/artifacts |
-            jq '.artifacts | sort_by(.created_at) | reverse | .[3:] | .[].id' |
-            xargs -I {} gh api -X DELETE repos/${{ github.repository }}/actions/artifacts/{}
+
+          # Lấy danh sách artifact dạng JSON
+          artifacts_json=$(gh api repos/${{ github.repository }}/actions/artifacts)
+
+          # Đếm số lượng artifact
+          total=$(echo "$artifacts_json" | jq '.artifacts | length')
+
+          echo "Found $total artifacts"
+
+          # Nếu có nhiều hơn 3 artifact thì xóa cái cũ
+          if [ "$total" -gt 3 ]; then
+            echo "$artifacts_json" | jq '.artifacts | sort_by(.created_at) | reverse | .[3:] | .[].id' | xargs -n1 -I {} gh api -X DELETE repos/${{ github.repository }}/actions/artifacts/{}
+          else
+            echo "Not enough artifacts to delete."
+          fi
+
 
       - name: Set up Git for pushing tags
         run: |
