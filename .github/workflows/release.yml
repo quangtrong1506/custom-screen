@@ -9,60 +9,27 @@ permissions:
   contents: write
 
 jobs:
-  build-linux:
+  
+  cleanup-artifacts:
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Install Wine (Ubuntu 22.04+)
+      - name: Delete old artifacts (keep latest 3)
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          sudo dpkg --add-architecture i386
-          sudo mkdir -pm755 /etc/apt/keyrings
-          sudo wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key
-          sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/jammy/winehq-jammy.sources
-          sudo apt update
-          sudo apt install --install-recommends winehq-stable -y
+          echo "Deleting old artifacts..."
 
-      - run: wine --version
+          artifacts_json=$(gh api repos/${{ github.repository }}/actions/artifacts)
+          total=$(echo "$artifacts_json" | jq '.artifacts | length')
 
-      - run: npm install
+          echo "Found $total artifacts"
 
-      - name: Build on Linux (AppImage + exe)
-        run: npm run build
+          if [ "$total" -gt 3 ]; then
+            echo "$artifacts_json" | jq '.artifacts | sort_by(.created_at) | reverse | .[3:] | .[].id' | xargs -n1 -I {} gh api -X DELETE repos/${{ github.repository }}/actions/artifacts/{}
+          else
+            echo "Not enough artifacts to delete."
+          fi
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: linux-artifacts
-          path: dist/
-
-  build-macos:
-    runs-on: macos-latest
-    env:
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - run: npm install
-
-      - name: Build on macOS (.dmg)
-        run: npm run build
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: macos-artifacts
-          path: dist/
 
   build-windows:
     runs-on: windows-latest
@@ -70,6 +37,17 @@ jobs:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - uses: actions/checkout@v3
+
+      - name: Set up Git for pushing tags
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git
+
+      - name: Bump version and push tag
+        run: |
+          npm version patch -m "chore: bump version to %s"
+          git push origin --follow-tags
 
       - uses: actions/setup-node@v3
         with:
@@ -88,25 +66,10 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs:
-      - build-linux
-      - build-macos
-      - build-windows
+    needs: build-windows
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v3
-
-      - name: Download Linux artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: linux-artifacts
-          path: all-artifacts/linux
-
-      - name: Download macOS artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: macos-artifacts
-          path: all-artifacts/macos
 
       - name: Download Windows artifacts
         uses: actions/download-artifact@v4
@@ -117,16 +80,7 @@ jobs:
       - name: Flatten artifacts
         run: |
           mkdir release
-          cp -r all-artifacts/linux/* release/
-          cp -r all-artifacts/macos/* release/
           cp -r all-artifacts/windows/* release/
-
-      - name: Bump version and push tag
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          npm version patch -m "chore: bump version to %s"
-          git push --follow-tags
 
       - name: Get latest tag
         id: get_version
@@ -138,3 +92,5 @@ jobs:
           name: Release ${{ steps.get_version.outputs.tag }}
           tag_name: ${{ steps.get_version.outputs.tag }}
           files: release/*
+
+  
