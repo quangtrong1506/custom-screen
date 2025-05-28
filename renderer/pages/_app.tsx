@@ -2,9 +2,10 @@
 
 import React from 'react';
 import type { AppProps } from 'next/app';
+import Head from 'next/head';
+import { BgMain } from '../components';
 
 import '../styles/globals.css';
-import Head from 'next/head';
 
 function MyApp({ Component, pageProps }: AppProps) {
     return (
@@ -12,7 +13,10 @@ function MyApp({ Component, pageProps }: AppProps) {
             <Head>
                 <title>Cute Skin</title>
             </Head>
-            <Component {...pageProps} />
+            <div onContextMenu={(e) => e.preventDefault()}>
+                <Component {...pageProps} />
+                <BgMain />
+            </div>
         </React.Fragment>
     );
 }
