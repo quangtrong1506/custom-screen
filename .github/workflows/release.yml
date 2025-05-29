@@ -21,8 +21,9 @@ jobs:
                   echo "$artifacts_json" | jq '.artifacts | map(select(.expired == false)) | sort_by(.created_at) | reverse | .[3:] | .[].id' \
                     | xargs -n1 -I {} gh api -X DELETE repos/${{ github.repository }}/actions/artifacts/{}
 
-    build-windows:
+    build-and-release:
         runs-on: windows-latest
+        if: github.ref == 'refs/heads/main'
         env:
             GH_TOKEN: ${{ secrets.GH_TOKEN }}
         steps:
@@ -49,37 +50,17 @@ jobs:
             - name: Build on Windows (.exe)
               run: npm run build
 
-            - name: Copy build to staging for release
+            - name: Prepare release folder
               run: |
                   mkdir release
                   cp dist/*.exe release/
 
-            - uses: actions/upload-artifact@v4
-              with:
-                  name: windows-artifacts
-                  path: release/
-
-    release:
-        runs-on: ubuntu-latest
-        needs: build-windows
-        if: github.ref == 'refs/heads/main'
-        steps:
-            - uses: actions/checkout@v3
-
-            - name: Fetch all tags
-              run: |
-                  git fetch --tags --force
-                  git pull
+            - name: Fetch tags
+              run: git fetch --tags --force
 
             - name: Get latest tag
               id: get_version
               run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
-
-            - name: Download artifacts
-              uses: actions/download-artifact@v4
-              with:
-                  name: windows-artifacts
-                  path: release/
 
             - name: Create GitHub Release
               uses: softprops/action-gh-release@v2
