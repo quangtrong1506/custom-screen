@@ -62,7 +62,7 @@ jobs:
             - name: Prepare release folder
               run: |
                   mkdir release
-                  cp dist/*.exe release/
+                  cp dist/*.exe dist/*.yml dist/*.yaml dist/*.blockmap release/ || echo "No optional files to copy"
 
             - name: Create GitHub Release
               uses: softprops/action-gh-release@v2
