@@ -35,17 +35,25 @@ jobs:
                   git config user.email "github-actions[bot]@users.noreply.github.com"
                   git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git
 
-            - name: Bump version and push tag
-              run: |
-                  npm version patch -m "chore: bump version to %s"
-                  git push origin --follow-tags
-
             - uses: actions/setup-node@v3
               with:
                   node-version: 20
                   cache: 'npm'
 
-            - run: npm ci
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Bump version and push tag
+              run: |
+                  npm version patch -m "chore: bump version to %s"
+                  git push origin --follow-tags
+                  git fetch --tags --force  # ⚠️ Bắt buộc để đảm bảo tag được nhận
+
+            - name: Get latest tag
+              id: get_version
+              run: |
+                  tag=$(git describe --tags --abbrev=0)
+                  echo "tag=$tag" >> $GITHUB_OUTPUT
 
             - name: Build on Windows (.exe)
               run: npm run build
@@ -54,13 +62,6 @@ jobs:
               run: |
                   mkdir release
                   cp dist/*.exe release/
-
-            - name: Fetch tags
-              run: git fetch --tags --force
-
-            - name: Get latest tag
-              id: get_version
-              run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
 
             - name: Create GitHub Release
               uses: softprops/action-gh-release@v2
