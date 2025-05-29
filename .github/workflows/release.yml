@@ -1,96 +1,86 @@
 name: Build Electron App
 
 on:
-  push:
-    branches:
-      - '**'
+    push:
+        branches:
+            - '**'
 
 permissions:
-  contents: write
+    contents: write
 
 jobs:
-  
-  cleanup-artifacts:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Delete old artifacts (keep latest 3)
+    cleanup-artifacts:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Delete old artifacts (keep latest 3)
+              env:
+                  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+              run: |
+                  echo "Cleaning up old artifacts..."
+                  artifacts_json=$(gh api repos/${{ github.repository }}/actions/artifacts?per_page=100)
+                  echo "$artifacts_json" | jq '.artifacts | map(select(.expired == false)) | sort_by(.created_at) | reverse | .[3:] | .[].id' \
+                    | xargs -n1 -I {} gh api -X DELETE repos/${{ github.repository }}/actions/artifacts/{}
+
+    build-windows:
+        runs-on: windows-latest
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: |
-          echo "Deleting old artifacts..."
+            GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        steps:
+            - uses: actions/checkout@v3
 
-          artifacts_json=$(gh api repos/${{ github.repository }}/actions/artifacts)
-          total=$(echo "$artifacts_json" | jq '.artifacts | length')
+            - name: Set up Git for pushing tags
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+                  git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git
 
-          echo "Found $total artifacts"
+            - name: Bump version and push tag
+              run: |
+                  npm version patch -m "chore: bump version to %s"
+                  git push origin --follow-tags
 
-          if [ "$total" -gt 3 ]; then
-            echo "$artifacts_json" | jq '.artifacts | sort_by(.created_at) | reverse | .[3:] | .[].id' | xargs -n1 -I {} gh api -X DELETE repos/${{ github.repository }}/actions/artifacts/{}
-          else
-            echo "Not enough artifacts to delete."
-          fi
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+                  cache: 'npm'
 
+            - run: npm ci
 
-  build-windows:
-    runs-on: windows-latest
-    env:
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
-    steps:
-      - uses: actions/checkout@v3
+            - name: Build on Windows (.exe)
+              run: npm run build
 
-      - name: Set up Git for pushing tags
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git
+            - name: Copy build to staging for release
+              run: |
+                  mkdir release
+                  cp dist/*.exe release/
 
-      - name: Bump version and push tag
-        run: |
-          npm version patch -m "chore: bump version to %s"
-          git push origin --follow-tags
+            - uses: actions/upload-artifact@v4
+              if: false # không dùng upload artifact nữa, tránh lỗi quota
+              with:
+                  name: windows-artifacts
+                  path: dist/
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: 'npm'
+    release:
+        runs-on: ubuntu-latest
+        needs: build-windows
+        if: github.ref == 'refs/heads/main'
+        steps:
+            - uses: actions/checkout@v3
 
-      - run: npm install
+            - name: Get latest tag
+              id: get_version
+              run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
 
-      - name: Build on Windows (.exe)
-        run: npm run build
+            - name: Download artifact folder from build
+              uses: actions/download-artifact@v4
+              if: false # không dùng nếu không upload artifact
+              with:
+                  name: windows-artifacts
+                  path: release
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: windows-artifacts
-          path: dist/
-
-  release:
-    runs-on: ubuntu-latest
-    needs: build-windows
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Download Windows artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: windows-artifacts
-          path: all-artifacts/windows
-
-      - name: Flatten artifacts
-        run: |
-          mkdir release
-          cp -r all-artifacts/windows/* release/
-
-      - name: Get latest tag
-        id: get_version
-        run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: Release ${{ steps.get_version.outputs.tag }}
-          tag_name: ${{ steps.get_version.outputs.tag }}
-          files: release/*
-
-  
+            - name: Create GitHub Release
+              uses: softprops/action-gh-release@v2
+              with:
+                  name: Release ${{ steps.get_version.outputs.tag }}
+                  tag_name: ${{ steps.get_version.outputs.tag }}
+                  files: release/*.exe
