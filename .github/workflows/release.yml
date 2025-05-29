@@ -47,7 +47,7 @@ jobs:
               run: |
                   npm version patch -m "chore: bump version to %s"
                   git push origin --follow-tags
-                  git fetch --tags --force  # ⚠️ Bắt buộc để đảm bảo tag được nhận
+                  git fetch --tags --force
 
             - name: Get latest tag
               id: get_version
