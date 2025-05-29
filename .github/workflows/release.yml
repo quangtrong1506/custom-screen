@@ -44,14 +44,14 @@ jobs:
               run: npm ci
 
             - name: Bump version and push tag
-              run: 
+              run: |
                   npm version patch -m "chore: bump version to %s"
                   git push origin --follow-tags
                   git fetch --tags --force
 
             - name: Get latest tag
               id: get_version
-              run: 
+              run: |
                   tag=$(git describe --tags --abbrev=0)
                   echo "tag=$tag" >> $GITHUB_OUTPUT
 
