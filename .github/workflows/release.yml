@@ -67,16 +67,8 @@ jobs:
         steps:
             - uses: actions/checkout@v3
 
-            - name: Download Windows artifacts
-              uses: actions/download-artifact@v4
-              with:
-                  name: windows-artifacts
-                  path: all-artifacts/windows
-
-            - name: Flatten artifacts
-              run: |
-                  mkdir release
-                  cp -r all-artifacts/windows/* release/
+            - name: Fetch all tags
+              run: git fetch --tags
 
             - name: Get latest tag
               id: get_version
