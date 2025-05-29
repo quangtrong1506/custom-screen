@@ -55,10 +55,9 @@ jobs:
                   cp dist/*.exe release/
 
             - uses: actions/upload-artifact@v4
-              if: false # không dùng upload artifact nữa, tránh lỗi quota
               with:
                   name: windows-artifacts
-                  path: dist/
+                  path: release/
 
     release:
         runs-on: ubuntu-latest
@@ -68,11 +67,19 @@ jobs:
             - uses: actions/checkout@v3
 
             - name: Fetch all tags
-              run: git fetch --tags
+              run: |
+                  git fetch --tags --force
+                  git pull
 
             - name: Get latest tag
               id: get_version
               run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+
+            - name: Download artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  name: windows-artifacts
+                  path: release/
 
             - name: Create GitHub Release
               uses: softprops/action-gh-release@v2
