@@ -51,6 +51,7 @@ jobs:
 
             - name: Get latest tag
               id: get_version
+              shell: bash
               run: |
                   tag=$(git describe --tags --abbrev=0)
                   echo "tag=$tag" >> $GITHUB_OUTPUT
