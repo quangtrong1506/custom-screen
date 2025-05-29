@@ -60,9 +60,10 @@ jobs:
               run: npm run build
 
             - name: Prepare release folder
+              shell: bash
               run: |
-                  mkdir release
-                  cp dist/*.exe dist/*.yml dist/*.blockmap release/ || echo "No optional files to copy"
+                  mkdir -p release
+                  cp dist/*.exe dist/*.yml dist/*.yaml dist/*.blockmap release/ 2>/dev/null || echo "Some files missing, skip"
 
             - name: Create GitHub Release
               uses: softprops/action-gh-release@v2
