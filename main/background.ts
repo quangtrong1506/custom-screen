@@ -1,4 +1,5 @@
 import path from 'path';
+import 'dotenv/config';
 import { app, ipcMain, screen } from 'electron';
 import serve from 'electron-serve';
 import { autoUpdater } from 'electron-updater';
@@ -32,13 +33,52 @@ if (isProd) {
     } else {
         const port = process.argv[2];
         await mainWindow.loadURL(`http://localhost:${port}/`);
-        mainWindow.webContents.openDevTools();
+        console.log('token', process.env.GH_TOKEN);
     }
+    mainWindow.webContents.openDevTools();
 
-    autoUpdater.checkForUpdatesAndNotify();
+    // autoUpdater.checkForUpdatesAndNotify();
     setInterval(() => {
-        autoUpdater.checkForUpdatesAndNotify();
-    }, 60 * 1000);
+        mainWindow.webContents.send('main', {
+            log: 'checked for updates',
+        });
+        autoUpdater
+            .checkForUpdates()
+            .then((e) => {
+                mainWindow.webContents.send('main', {
+                    log: 'checked for updates @',
+                });
+                mainWindow.webContents.send('main', {
+                    log: e,
+                });
+            })
+            .catch((e) => {
+                mainWindow.webContents.send('main', {
+                    log: 'Error checking for updates @',
+                });
+                mainWindow.webContents.send('main', {
+                    log: e,
+                });
+            });
+        autoUpdater
+            .checkForUpdatesAndNotify()
+            .then((e) => {
+                mainWindow.webContents.send('main', {
+                    log: 'checked for updates',
+                });
+                mainWindow.webContents.send('main', {
+                    log: e,
+                });
+            })
+            .catch((e) => {
+                mainWindow.webContents.send('main', {
+                    log: 'Error checking for updates',
+                });
+                mainWindow.webContents.send('main', {
+                    log: e,
+                });
+            });
+    }, 10 * 1000);
 })();
 
 app.on('window-all-closed', () => {
