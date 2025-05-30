@@ -10,10 +10,7 @@ files:
     - from: .
       filter:
           - package.json
-          - app/**/*
-
-extraMetadata:
-    main: app/main.js
+          - app
 
 win:
     target:
