@@ -1,20 +1,33 @@
-appId: com.example.nextron.test
-productName: My Nextron App (test)
-copyright: Copyright © 2018 Test
+appId: com.quangtrong.1506.live.wallpaper
+productName: Live Wallpaper
+copyright: Copyright © 2025 Quangtrong1506
 
 directories:
-  output: dist
-  buildResources: resources
+    output: dist
+    buildResources: resources
 
 files:
-  - from: .
-    filter:
-      - package.json
-      - app
+    - from: .
+      filter:
+          - package.json
+          - app/**/*
+
+extraMetadata:
+    main: app/main.js
 
 win:
-  target:
-    - nsis # tạo installer .exe dạng NSIS
-  icon: resources/icon.ico # nếu bạn có icon cho app
+    target:
+        - nsis
+    icon: resources/icon.ico
 
-artifactName: '${productName}.setup.${ext}'
+artifactName: '${productName}.${version}.setup.${ext}'
+
+nsis:
+    oneClick: false
+    perMachine: false
+    allowToChangeInstallationDirectory: true
+
+publish:
+    provider: github
+    owner: quangtrong1506
+    repo: custom-screen

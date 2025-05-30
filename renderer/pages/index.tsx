@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { ShortcutInterface } from '../components/shortcut/item/type';
+import { Demo } from '../components';
 
 const shortcuts: ShortcutInterface[] = [
     { id: '1', title: 'My Computer', icon: '🖥️', url: '/' },
@@ -19,16 +20,38 @@ const config = {
     itemHeight: 120,
     gap: 10,
 };
-
+interface ItemInterface {
+    id: number;
+    top: number;
+    left: number;
+}
 export default function ShortcutGrid(): JSX.Element {
     const [scale, setScale] = useState<number>(1);
-    const [layout, setLayout] = useState<number[]>([]);
-    function handleDrag() {}
+    const [items, setItems] = useState<ItemInterface[]>([]);
+    const [dragItem, setDragItem] = useState<ItemInterface | null>(null);
 
-    function generateLayout() {}
+    function generateLayout() {
+        const cols = Math.floor((window.innerWidth - config.gap * 2) / (config.itemWidth + config.gap));
+        const rows = Math.floor((window.innerHeight - config.gap * 2) / (config.itemHeight + config.gap));
+        const newItems: ItemInterface[] = [];
+
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+                const top = row * (config.itemHeight + config.gap) + config.gap;
+                const left = col * (config.itemWidth + config.gap) + config.gap;
+                newItems.push({ id: row * cols + col, top, left });
+            }
+        }
+
+        setItems(newItems);
+    }
+
+    console.log(dragItem);
 
     useEffect(() => {
-        const handleResize = (pScale = 1) => {};
+        const handleResize = () => {
+            generateLayout();
+        };
         handleResize();
         const handleKeyDown = (e: KeyboardEvent) => {
             const isMac = navigator.platform.toUpperCase().includes('MAC');
@@ -39,7 +62,7 @@ export default function ShortcutGrid(): JSX.Element {
                 e.preventDefault();
                 setScale((scale) => {
                     const ns = scale + 0.2 < 2 ? scale + 0.2 : scale;
-                    handleResize(ns);
+                    handleResize();
                     return ns;
                 });
                 return;
@@ -48,7 +71,7 @@ export default function ShortcutGrid(): JSX.Element {
                 e.preventDefault();
                 setScale((scale) => {
                     const ns = scale - 0.2 > 1 ? scale - 0.2 : scale;
-                    handleResize(ns);
+                    handleResize();
                     return ns;
                 });
                 return;
@@ -67,5 +90,9 @@ export default function ShortcutGrid(): JSX.Element {
         };
     }, []);
     // if (cols === 0) return null;
-    return <div className="w-screen h-screen fixed top-0 bottom-0 right-0 left-0 z-10"></div>;
+    return (
+        <div className="w-screen h-screen fixed top-0 bottom-0 right-0 left-0 z-10">
+            <Demo />
+        </div>
+    );
 }

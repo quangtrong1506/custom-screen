@@ -1,6 +1,7 @@
 import path from 'path';
 import { app, ipcMain, screen } from 'electron';
 import serve from 'electron-serve';
+import { autoUpdater } from 'electron-updater';
 import { createWindow } from './helpers';
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -33,12 +34,13 @@ if (isProd) {
         await mainWindow.loadURL(`http://localhost:${port}/`);
         mainWindow.webContents.openDevTools();
     }
+
+    autoUpdater.checkForUpdatesAndNotify();
+    setInterval(() => {
+        autoUpdater.checkForUpdatesAndNotify();
+    }, 60 * 1000);
 })();
 
 app.on('window-all-closed', () => {
     app.quit();
-});
-
-ipcMain.on('message', async (event, arg) => {
-    event.reply('message', `${arg} World!`);
 });
