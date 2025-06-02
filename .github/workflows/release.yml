@@ -9,18 +9,6 @@ permissions:
     contents: write
 
 jobs:
-    # cleanup-artifacts:
-    #     runs-on: ubuntu-latest
-    #     steps:
-    #         - name: Delete old artifacts (keep latest 3)
-    #           env:
-    #               GH_TOKEN: ${{ secrets.GH_TOKEN }}
-    #           run: |
-    #               echo "Cleaning up old artifacts..."
-    #               artifacts_json=$(gh api repos/${{ github.repository }}/actions/artifacts?per_page=100)
-    #               echo "$artifacts_json" | jq '.artifacts | map(select(.expired == false)) | sort_by(.created_at) | reverse | .[3:] | .[].id' \
-    #                 | xargs -n1 -I {} gh api -X DELETE repos/${{ github.repository }}/actions/artifacts/{}
-
     build-and-release:
         runs-on: windows-latest
         if: github.ref == 'refs/heads/main'
@@ -53,10 +41,7 @@ jobs:
               id: get_version
               shell: bash
               run: |
-                  # Thử lấy tag gần nhất
                   tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-
-                  # Nếu chưa có tag thì tạo tag v0.1.0
                   if [ -z "$tag" ]; then
                     tag="v0.1.0"
                     git config user.name "github-actions"
@@ -64,7 +49,6 @@ jobs:
                     git tag $tag
                     git push origin $tag
                   fi
-
                   echo "tag=$tag" >> $GITHUB_OUTPUT
 
             - name: Build on Windows (.exe)
@@ -82,3 +66,32 @@ jobs:
                   name: Release ${{ steps.get_version.outputs.tag }}
                   tag_name: ${{ steps.get_version.outputs.tag }}
                   files: release/*
+
+    preview:
+        runs-on: windows-latest
+        if: github.ref != 'refs/heads/main'
+        steps:
+            - uses: actions/checkout@v3
+
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+                  cache: 'npm'
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build on Windows (.exe)
+              run: npm run build
+
+            - name: Prepare preview artifacts
+              shell: bash
+              run: |
+                  mkdir -p preview
+                  cp dist/*.exe dist/*.yml dist/*.yaml dist/*.blockmap preview/ 2>/dev/null || echo "Some files missing, skip"
+
+            - name: Upload preview artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: electron-preview
+                  path: preview
