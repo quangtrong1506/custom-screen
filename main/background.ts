@@ -3,18 +3,19 @@ import 'dotenv/config';
 import { app, ipcMain, screen } from 'electron';
 import serve from 'electron-serve';
 import { autoUpdater } from 'electron-updater';
-import { createWindow } from './helpers';
+import { createWindow, setupAutoUpdater } from './helpers';
 
 const isProd = process.env.NODE_ENV === 'production';
 
-autoUpdater.setFeedURL('https://api.github.com/repos/quangtrong1506/custom-screen/releases/latest');
-
-// autoUpdater.setFeedURL({
-//     provider: 'github',
-//     owner: 'quangtrong1506',
-//     repo: 'custom-screen',
-//     releaseType: 'release',
-// });
+autoUpdater.setFeedURL({
+    provider: 'github',
+    owner: 'quangtrong1506',
+    repo: 'custom-screen',
+    token: process.env.GH_TOKEN,
+    releaseType: 'release',
+    publishAutoUpdate: true,
+    private: false,
+});
 
 if (isProd) {
     serve({ directory: 'app' });
@@ -40,43 +41,13 @@ if (isProd) {
 
     if (isProd) {
         await mainWindow.loadURL('app://./');
+        setupAutoUpdater(mainWindow);
     } else {
         const port = process.argv[2];
         await mainWindow.loadURL(`http://localhost:${port}/`);
         console.log('token', process.env.GH_TOKEN);
     }
     mainWindow.webContents.openDevTools();
-
-    // autoUpdater.checkForUpdatesAndNotify();
-    setInterval(() => {
-        mainWindow.webContents.send('main', {
-            log: 'checked for updates',
-        });
-        autoUpdater
-            .checkForUpdates()
-            .then((e) => {
-                mainWindow.webContents.send('main', {
-                    log: 'checked for updates @',
-                });
-
-                mainWindow.webContents.send('main', {
-                    log: {
-                        event: e,
-                        ver: autoUpdater.currentVersion,
-                        info: autoUpdater.updateConfigPath,
-                        other: autoUpdater.forceDevUpdateConfig,
-                    },
-                });
-            })
-            .catch((e) => {
-                mainWindow.webContents.send('main', {
-                    log: 'Error checking for updates @',
-                });
-                mainWindow.webContents.send('main', {
-                    log: e,
-                });
-            });
-    }, 10 * 1000);
 })();
 
 app.on('window-all-closed', () => {
