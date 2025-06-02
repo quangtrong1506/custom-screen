@@ -6,6 +6,13 @@ import { autoUpdater } from 'electron-updater';
 import { createWindow } from './helpers';
 const isProd = process.env.NODE_ENV === 'production';
 
+autoUpdater.setFeedURL({
+    provider: 'github',
+    owner: 'quangtrong1506',
+    repo: 'custom-screen',
+    releaseType: 'release',
+});
+
 if (isProd) {
     serve({ directory: 'app' });
 } else {
@@ -51,28 +58,16 @@ if (isProd) {
                 mainWindow.webContents.send('main', {
                     log: e,
                 });
+                mainWindow.webContents.send('main', {
+                    log: {
+                        ver: autoUpdater.currentVersion,
+                        info: autoUpdater.updateConfigPath,
+                    },
+                });
             })
             .catch((e) => {
                 mainWindow.webContents.send('main', {
                     log: 'Error checking for updates @',
-                });
-                mainWindow.webContents.send('main', {
-                    log: e,
-                });
-            });
-        autoUpdater
-            .checkForUpdatesAndNotify()
-            .then((e) => {
-                mainWindow.webContents.send('main', {
-                    log: 'checked for updates',
-                });
-                mainWindow.webContents.send('main', {
-                    log: e,
-                });
-            })
-            .catch((e) => {
-                mainWindow.webContents.send('main', {
-                    log: 'Error checking for updates',
                 });
                 mainWindow.webContents.send('main', {
                     log: e,
