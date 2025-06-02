@@ -4,14 +4,17 @@ import { app, ipcMain, screen } from 'electron';
 import serve from 'electron-serve';
 import { autoUpdater } from 'electron-updater';
 import { createWindow } from './helpers';
+
 const isProd = process.env.NODE_ENV === 'production';
 
-autoUpdater.setFeedURL({
-    provider: 'github',
-    owner: 'quangtrong1506',
-    repo: 'custom-screen',
-    releaseType: 'release',
-});
+autoUpdater.setFeedURL('https://api.github.com/repos/quangtrong1506/custom-screen/releases/latest');
+
+// autoUpdater.setFeedURL({
+//     provider: 'github',
+//     owner: 'quangtrong1506',
+//     repo: 'custom-screen',
+//     releaseType: 'release',
+// });
 
 if (isProd) {
     serve({ directory: 'app' });
@@ -55,13 +58,13 @@ if (isProd) {
                 mainWindow.webContents.send('main', {
                     log: 'checked for updates @',
                 });
-                mainWindow.webContents.send('main', {
-                    log: e,
-                });
+
                 mainWindow.webContents.send('main', {
                     log: {
+                        event: e,
                         ver: autoUpdater.currentVersion,
                         info: autoUpdater.updateConfigPath,
+                        other: autoUpdater.forceDevUpdateConfig,
                     },
                 });
             })

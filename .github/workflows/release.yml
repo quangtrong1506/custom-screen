@@ -49,11 +49,22 @@ jobs:
                   git push origin --follow-tags
                   git fetch --tags --force
 
-            - name: Get latest tag
+            - name: Get latest tag or create one if none exists
               id: get_version
               shell: bash
               run: |
-                  tag=$(git describe --tags --abbrev=0)
+                  # Thử lấy tag gần nhất
+                  tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+                  # Nếu chưa có tag thì tạo tag v0.1.0
+                  if [ -z "$tag" ]; then
+                    tag="v0.1.0"
+                    git config user.name "github-actions"
+                    git config user.email "github-actions@users.noreply.github.com"
+                    git tag $tag
+                    git push origin $tag
+                  fi
+
                   echo "tag=$tag" >> $GITHUB_OUTPUT
 
             - name: Build on Windows (.exe)
