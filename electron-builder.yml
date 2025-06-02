@@ -20,11 +20,9 @@ win:
 artifactName: 'Live-Wallpaper.${version}.setup.${ext}'
 
 nsis:
-    allowToChangeInstallationDirectory: true
     createDesktopShortcut: true
     createStartMenuShortcut: true
-    oneClick: false
-    perMachine: false
+    oneClick: true
     runAfterFinish: true
 
 publish:
