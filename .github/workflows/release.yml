@@ -75,7 +75,7 @@ jobs:
         steps:
             - uses: actions/checkout@v3
 
-            - name: Set up Git (optional)
+            - name: Set up Git
               run: |
                   git config user.name "github-actions[bot]"
                   git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -98,8 +98,26 @@ jobs:
                   mkdir -p preview
                   cp dist/*.exe dist/*.yml dist/*.yaml dist/*.blockmap preview/ 2>/dev/null || echo "Some files missing, skip"
 
-            - name: Upload preview artifacts
-              uses: actions/upload-artifact@v4
+            - name: Create preview tag
+              id: tag
+              shell: bash
+              run: |
+                  branch="${GITHUB_REF##*/}"
+                  tag="preview-${branch//\//-}"
+                  git tag -f $tag
+                  git push origin $tag --force
+                  echo "tag=$tag" >> $GITHUB_OUTPUT
+
+            - name: Create GitHub Preview Release
+              uses: softprops/action-gh-release@v2
               with:
-                  name: electron-preview
-                  path: preview
+                  name: Preview ${{ steps.tag.outputs.tag }}
+                  tag_name: ${{ steps.tag.outputs.tag }}
+                  files: preview/*
+                  prerelease: true
+
+            - name: Remove preview tag
+              shell: bash
+              run: |
+                  git tag -d ${{ steps.tag.outputs.tag }}
+                  git push origin :${{ steps.tag.outputs.tag }}
