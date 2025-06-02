@@ -1,6 +1,15 @@
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 
+autoUpdater.setFeedURL({
+    provider: 'github',
+    owner: 'quangtrong1506',
+    repo: 'custom-screen',
+    token: process.env.GH_TOKEN,
+    releaseType: 'release',
+    publishAutoUpdate: true,
+    private: false,
+});
 autoUpdater.logger = log;
 log.transports.file.level = 'info';
 

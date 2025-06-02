@@ -11,6 +11,9 @@ files:
       filter:
           - package.json
           - app
+extraResources:
+    - from: resources/icon.ico
+      to: icon.ico
 
 win:
     target:
