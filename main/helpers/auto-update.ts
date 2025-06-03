@@ -1,41 +1,89 @@
 import { autoUpdater } from 'electron-updater';
-import log from 'electron-log';
+import { sendWebContents } from './web-contents';
+import { ipcMain } from 'electron';
+import { showNativeNotification } from './notifications';
+import { log } from './dev-log';
 
+autoUpdater.setFeedURL({
+    provider: 'github',
+    owner: 'quangtrong1506',
+    repo: 'custom-screen',
+    token: process.env.GH_TOKEN,
+    releaseType: 'release',
+    publishAutoUpdate: true,
+    private: false,
+});
 autoUpdater.logger = log;
-log.transports.file.level = 'info';
 
 function setupAutoUpdater(mainWindow: Electron.BrowserWindow) {
     autoUpdater.autoDownload = true;
+    autoUpdater.autoInstallOnAppQuit = true;
 
     autoUpdater.on('checking-for-update', () => {
-        log.info('🧐 Đang kiểm tra cập nhật...');
-        mainWindow.webContents.send('update', 'checking');
+        console.log('🧐 Đang kiểm tra cập nhật...');
     });
 
     autoUpdater.on('update-available', (info) => {
         log.info('🆕 Có bản cập nhật mới:', info);
-        mainWindow.webContents.send('update', 'available');
+        sendWebContents(mainWindow, 'update', {
+            new: true,
+            data: info,
+        });
     });
 
     autoUpdater.on('update-not-available', (info) => {
-        log.info('🙅‍♂️ Không có bản cập nhật mới:', info);
-        mainWindow.webContents.send('update', 'none');
+        console.log('🆕 Có bản cập nhật mới:', info);
     });
 
     autoUpdater.on('error', (err) => {
         log.error('❌ Lỗi cập nhật:', err);
-        mainWindow.webContents.send('update', 'error');
+        sendWebContents(mainWindow, 'update', {
+            error: err.message,
+            data: err,
+        });
     });
 
-    autoUpdater.on('update-downloaded', () => {
+    autoUpdater.on('update-downloaded', (info) => {
         log.info('✅ Đã tải xong cập nhật, sẽ cài đặt khi thoát...');
-        autoUpdater.quitAndInstall();
+        // autoUpdater.quitAndInstall();
+        sendWebContents(mainWindow, 'update', {
+            confirm: true,
+            data: {
+                messenger: `Đã có cập nhật phiên bản mới (${info.version})`,
+                info,
+            },
+        });
+        showNativeNotification({
+            title: 'Cập nhật',
+            body: `Đã có cập nhật phiên bản mới (${info.version})`,
+            onClick() {
+                autoUpdater.quitAndInstall(true, true);
+            },
+            actions: [
+                {
+                    type: 'button',
+                    text: 'Cài đặt',
+                    onClick: () => {
+                        autoUpdater.quitAndInstall(true, true);
+                    },
+                },
+            ],
+        });
     });
 
     autoUpdater.checkForUpdates();
     setInterval(() => {
         autoUpdater.checkForUpdates();
-    }, 5 * 60 * 1000);
+    }, 15 * 60 * 1000);
 }
+
+ipcMain.on('update', (_e, data) => {
+    if (data?.check) autoUpdater.checkForUpdates();
+});
+ipcMain.on('update', (_e, data) => {
+    if (data?.confirm) {
+        autoUpdater.quitAndInstall(true, true);
+    }
+});
 
 export { setupAutoUpdater };
