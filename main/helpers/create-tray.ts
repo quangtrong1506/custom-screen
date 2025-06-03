@@ -55,7 +55,7 @@ export function createTray(mainWindow: BrowserWindow): void {
             },
         ]);
 
-        tray.setToolTip('Electron Tray Menu');
+        tray.setToolTip(app.name);
         tray.setContextMenu(contextMenu);
 
         tray.on('click', () => {
