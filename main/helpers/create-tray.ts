@@ -1,7 +1,6 @@
 import { Menu, Tray, BrowserWindow, shell, app, nativeImage } from 'electron';
 import path from 'path';
-import log from 'electron-log';
-log.transports.file.maxSize = 5 * 1024 * 1024; // 5MB
+import { log } from './dev-log';
 
 let tray: Tray | null = null;
 let isVisible = true;
@@ -24,9 +23,10 @@ export function createTray(mainWindow: BrowserWindow): void {
                 label: isVisible ? 'Ẩn cửa sổ' : 'Hiện cửa sổ',
                 click: () => {
                     if (isVisible) mainWindow.hide();
-                    else mainWindow.show();
-                    isVisible = !isVisible;
-                    createTray(mainWindow); // cập nhật label
+                    else {
+                        mainWindow.show();
+                        mainWindow.maximize();
+                    }
                 },
             },
             {
@@ -60,8 +60,20 @@ export function createTray(mainWindow: BrowserWindow): void {
 
         tray.on('click', () => {
             if (mainWindow.isVisible()) mainWindow.hide();
-            else mainWindow.show();
-            isVisible = mainWindow.isVisible();
+            else {
+                mainWindow.show();
+                mainWindow.maximize();
+            }
+        });
+
+        mainWindow.on('hide', () => {
+            isVisible = false;
+            createTray(mainWindow);
+        });
+
+        mainWindow.on('show', () => {
+            isVisible = true;
+            createTray(mainWindow);
         });
     } catch (error) {
         log.error(error);

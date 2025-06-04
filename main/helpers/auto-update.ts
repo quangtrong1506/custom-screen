@@ -1,6 +1,6 @@
 import { autoUpdater } from 'electron-updater';
 import { sendWebContents } from './web-contents';
-import { ipcMain } from 'electron';
+import { app, ipcMain } from 'electron';
 import { showNativeNotification } from './notifications';
 import { log } from './dev-log';
 
@@ -14,8 +14,9 @@ autoUpdater.setFeedURL({
     private: false,
 });
 autoUpdater.logger = log;
-
+let mw: Electron.BrowserWindow | null = null;
 function setupAutoUpdater(mainWindow: Electron.BrowserWindow) {
+    mw = mainWindow;
     autoUpdater.autoDownload = true;
     autoUpdater.autoInstallOnAppQuit = true;
 
@@ -57,14 +58,18 @@ function setupAutoUpdater(mainWindow: Electron.BrowserWindow) {
             title: 'Cập nhật',
             body: `Đã có cập nhật phiên bản mới (${info.version})`,
             onClick() {
-                autoUpdater.quitAndInstall(true, true);
+                mainWindow.destroy();
+                app.relaunch();
+                app.exit(0);
             },
             actions: [
                 {
                     type: 'button',
                     text: 'Cài đặt',
                     onClick: () => {
-                        autoUpdater.quitAndInstall(true, true);
+                        mainWindow.destroy();
+                        app.relaunch();
+                        app.exit(0);
                     },
                 },
             ],
@@ -82,7 +87,9 @@ ipcMain.on('update', (_e, data) => {
 });
 ipcMain.on('update', (_e, data) => {
     if (data?.confirm) {
-        autoUpdater.quitAndInstall(true, true);
+        mw.destroy();
+        app.relaunch();
+        app.exit(0);
     }
 });
 
