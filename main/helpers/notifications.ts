@@ -1,5 +1,4 @@
 import { app, nativeImage, Notification } from 'electron';
-import Logger from 'electron-log';
 import * as path from 'path';
 import { log } from './dev-log';
 
