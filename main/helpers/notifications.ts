@@ -11,8 +11,8 @@ type Action = Electron.NotificationAction & {
 };
 
 interface Options {
-    title?: string;
-    body: string;
+    title: string;
+    body?: string;
     actions?: Action[];
     onClick?: () => void;
     onClose?: () => void;
@@ -34,6 +34,7 @@ export function showNativeNotification(options: Options): void {
     });
 
     notification.on('action', (_event, index) => {
+        log.debug('Người dùng nhập với nút bấm', index);
         actions?.[index].onClick?.();
     });
 

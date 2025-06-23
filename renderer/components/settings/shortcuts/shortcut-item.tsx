@@ -1,5 +1,4 @@
 import React from 'react';
-import { FaEllipsis } from 'react-icons/fa6';
 import { ImageContainer } from '../../image-container';
 import { ThreeDotMenu } from '../../_common';
 

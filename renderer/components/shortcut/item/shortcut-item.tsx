@@ -3,7 +3,6 @@ import React, { useRef, useState } from 'react';
 import { useMeasure } from 'react-use';
 import { ShortcutInterface } from './type';
 import { ImageContainer } from '../../image-container';
-import { ZoomPopup } from './zoom-popup';
 
 export interface ShortcutItemProps {
     className?: string;
@@ -34,13 +33,6 @@ function getFontSize(width: number): string {
 export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
     const { className = '', item } = props;
     const [ref, { width }] = useMeasure<HTMLDivElement>();
-    const [openGroup, setOpenGroup] = useState<Boolean>(false);
-    const [groupPosition, setGroupPosition] = useState<{ x: number; y: number; w: number; h: number }>({
-        x: 0,
-        y: 0,
-        w: 0,
-        h: 0,
-    });
     const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
     const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -54,6 +46,7 @@ export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
         // Bắt đầu đếm 800ms
         timeoutRef.current = setTimeout(() => {
             wrapperRef.current?.classList.remove('non-draggable');
+            console.log('handleMouseDown');
 
             // 👉 Gửi lại sự kiện mousedown để react-grid-layout bắt được
             const newMouseEvent = new MouseEvent('mousedown', {
@@ -76,19 +69,6 @@ export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
 
     function handleDoubleClick() {
         cancelHold();
-        console.log('Double click');
-        setOpenGroup(true);
-        if (wrapperRef.current) {
-            const rect = wrapperRef.current.getBoundingClientRect();
-            const absoluteX = rect.left + window.scrollX;
-            const absoluteY = rect.top + window.scrollY;
-            setGroupPosition({
-                x: absoluteX,
-                y: absoluteY,
-                w: rect.width,
-                h: rect.height,
-            });
-        }
     }
 
     return (
@@ -118,16 +98,6 @@ export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
                     {item.title}
                 </div>
             </div>
-            <ZoomPopup
-                isOpen={openGroup}
-                onClose={() => setOpenGroup(false)}
-                x={groupPosition.x}
-                y={groupPosition.y}
-                width={groupPosition.w}
-                height={groupPosition.h}
-            >
-                a
-            </ZoomPopup>
         </>
     );
 }

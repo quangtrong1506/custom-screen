@@ -1,19 +1,20 @@
 import Link from 'next/link';
 import React from 'react';
 import { SettingShortcutItem } from '../../../components/settings';
+import { Routes } from '../../../config';
 
 /**
  * Trang chỉnh sửa cài đặt shortcut
  */
 const SettingShortcutPage = () => {
     return (
-        <div className="w-full flex justify-between bg-gray-50">
+        <div className="relative z-10 w-full flex justify-between bg-gray-50">
             <div></div>
             <div className="lg:w-[800px] h-[500px] p-3 text-black/70">
                 <div className="flex gap-2 items-center font-medium text-2xl">
-                    <Link href="/settings">Cài đặt</Link>
+                    <Link href={Routes.Settings}>Cài đặt</Link>
                     <div>{'>'}</div>
-                    <Link href="/settings/shortcuts">Shortcuts</Link>
+                    <Link href={Routes.SettingsShortcuts}>Shortcuts</Link>
                 </div>
                 <div className="flex justify-between mt-6">
                     <div className="w-[400px]">
