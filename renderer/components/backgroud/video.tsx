@@ -1,14 +1,23 @@
-import React from 'react';
-import { useIPCKey } from '../../hooks';
+// src/components/video.tsx
+import { useEffect, useRef } from 'react';
+import { sendIPC, useIPCKey } from '../../hooks';
 
 export function Video() {
-    const video = useIPCKey<string>('video');
-    console.log(video);
+    const ipc = useIPCKey<string>('get-background');
+    const videoRef = useRef<HTMLVideoElement>(null);
+
+    useEffect(() => {
+        sendIPC('get-background', null);
+    }, []);
+
+    useEffect(() => {
+        if (videoRef.current) videoRef.current.load();
+    }, [ipc]);
 
     return (
         <div className="w-full h-full flex items-center justify-center">
-            <video id="bg-main" className="h-full w-full object-cover" autoPlay loop muted>
-                <source src="/videos/emily-in-the-cyberpunk-city.3840x2160.mp4" type="video/mp4" />
+            <video id="bg-main" className="h-full w-full object-cover" autoPlay loop muted ref={videoRef}>
+                <source src={ipc} type="video/mp4" />
             </video>
         </div>
     );

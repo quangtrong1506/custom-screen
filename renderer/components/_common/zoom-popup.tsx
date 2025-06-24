@@ -27,8 +27,10 @@ export function ZoomPopup({ x, y, width, height, isOpen, onClose, children }: Zo
         if (isOpen) {
             const screenW = window.innerWidth;
             const screenH = window.innerHeight;
-            const w = screenW * 0.5;
-            const h = screenH * 0.6;
+            // const w = screenW * 0.5;
+            // const h = screenH * 0.6;
+            const w = 780;
+            const h = (780 * 9) / 16;
             const cx = screenW / 2 - w / 2;
             const cy = screenH / 2 - h / 2;
 

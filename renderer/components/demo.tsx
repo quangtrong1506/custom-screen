@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
 import { ShortcutItem } from './shortcut';
-import { RightMenu } from './backgroud';
 
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';

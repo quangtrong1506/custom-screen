@@ -1,6 +1,6 @@
 import { app, nativeImage, Notification } from 'electron';
 import * as path from 'path';
-import { log } from './dev-log';
+import { log } from '../dev-log';
 
 /**
  * Gửi thông báo kèm nút bấm

@@ -1,2 +1,2 @@
 export * from './upload-video';
-export * from './video-demo';
+export * from './video-preview';

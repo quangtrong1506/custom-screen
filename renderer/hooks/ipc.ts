@@ -15,3 +15,18 @@ export function useIPCKey<T = unknown>(key: string) {
     }, [key]);
     return value;
 }
+
+/**
+ * Gửi IPC từ renderer sang main với key cụ thể
+ * @param key tên khóa
+ * @param value giá trị cần gửi
+ */
+export function sendIPC(key: string, value: unknown): void {
+    if (!window.ipc?.send) return;
+    window.ipc.send(key, value);
+}
+
+export const sendIpcInvike = (key: string, value: unknown) => {
+    if (!window.ipc?.invoke) return;
+    return window.ipc.invoke(key, value);
+};

@@ -1,7 +1,8 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FaUpload } from 'react-icons/fa6';
 import { ZoomPopup } from '../../_common';
+import { sendIpcInvike } from '../../../hooks';
+import { showPromiseToast } from '../../../helpers/toast';
 
 export function UploadVideo() {
     const [open, setOpen] = useState<boolean>(false);
@@ -20,11 +21,20 @@ export function UploadVideo() {
         console.log('Dropped file:', file);
     }
 
-    function handleFileChange(event: React.ChangeEvent<HTMLInputElement>): void {
+    async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>): Promise<void> {
         const file = event.target.files?.[0];
         if (!file) return;
-
-        console.log('Selected file:', file);
+        const arrayBuffer = await file.arrayBuffer();
+        setOpen(false);
+        const promise = sendIpcInvike('upload-video', {
+            fileName: file.name,
+            buffer: Buffer.from(arrayBuffer),
+        });
+        showPromiseToast(promise, {
+            success: 'Đã tải lên video',
+            error: 'Lỗi tài lên video',
+            loading: 'Đang tải video lên',
+        });
     }
 
     return (

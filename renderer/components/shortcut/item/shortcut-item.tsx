@@ -1,5 +1,5 @@
 'use client';
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { useMeasure } from 'react-use';
 import { ShortcutInterface } from './type';
 import { ImageContainer } from '../../image-container';
@@ -33,22 +33,24 @@ function getFontSize(width: number): string {
 export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
     const { className = '', item } = props;
     const [ref, { width }] = useMeasure<HTMLDivElement>();
+
     const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
     const wrapperRef = useRef<HTMLDivElement>(null);
+    const isDraggingRef = useRef<boolean>(false);
 
     function cancelHold() {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        timeoutRef.current = undefined;
+        isDraggingRef.current = false;
         wrapperRef.current?.classList.add('non-draggable');
     }
 
     function handleMouseDown(e: React.MouseEvent<HTMLDivElement>) {
-        if (!wrapperRef.current) return;
-        // Bắt đầu đếm 800ms
+        if (!wrapperRef.current || timeoutRef.current || isDraggingRef.current) return;
         timeoutRef.current = setTimeout(() => {
+            timeoutRef.current = undefined;
+            isDraggingRef.current = true;
             wrapperRef.current?.classList.remove('non-draggable');
-            console.log('handleMouseDown');
-
-            // 👉 Gửi lại sự kiện mousedown để react-grid-layout bắt được
             const newMouseEvent = new MouseEvent('mousedown', {
                 bubbles: true,
                 cancelable: true,
@@ -72,32 +74,30 @@ export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
     }
 
     return (
-        <>
-            <div
-                ref={(node) => {
-                    ref(node);
-                    wrapperRef.current = node;
-                }}
-                id={'shortcut-item-' + item.id}
-                className={`w-full h-full flex py-2 items-center flex-col rounded-md select-none hover:bg-white/15 px-3 dark:hover:bg-black/10 ${className} non-draggable`}
-                onMouseDown={handleMouseDown}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseLeave}
-                onDoubleClick={handleDoubleClick}
-            >
-                <div className="flex w-4/5 justify-center aspect-square overflow-hidden items-center">
-                    <ImageContainer className="" src={item.icon || '/images/logo.png'} alt={item.title} />
-                </div>
-                <div
-                    className="line-clamp-2 text-center text-white"
-                    style={{
-                        fontSize: getFontSize(width),
-                        textShadow: '2px 2px 4px rgba(0, 0, 0, 0.4)',
-                    }}
-                >
-                    {item.title}
-                </div>
+        <div
+            ref={(node) => {
+                ref(node);
+                wrapperRef.current = node;
+            }}
+            id={'shortcut-item-' + item.id}
+            className={`w-full h-full flex py-2 items-center flex-col rounded-md select-none hover:bg-white/15 px-3 dark:hover:bg-black/10 ${className} non-draggable`}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
+            onDoubleClick={handleDoubleClick}
+        >
+            <div className="flex w-4/5 justify-center aspect-square overflow-hidden items-center">
+                <ImageContainer className="" src={item.icon || '/images/logo.png'} alt={item.title} />
             </div>
-        </>
+            <div
+                className="line-clamp-2 text-center text-white"
+                style={{
+                    fontSize: getFontSize(width),
+                    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.4)',
+                }}
+            >
+                {item.title}
+            </div>
+        </div>
     );
 }

@@ -1,5 +1,8 @@
 import { useRouter } from 'next/navigation';
 import { Routes } from '../../../config';
+import { useClickAway } from 'react-use';
+import { useRef } from 'react';
+import { sendIPC } from '../../../hooks';
 
 interface RightMenuProps {
     open?: boolean;
@@ -12,14 +15,17 @@ interface RightMenuProps {
  */
 export function RightMenu({ open, onClose, position }: RightMenuProps) {
     const router = useRouter();
-
+    const rootRef = useRef<HTMLDivElement>(null);
+    useClickAway(rootRef, () => onClose?.());
     return (
         <div
-            className="fixed z-50 min-w-[180px] bg-white p-1 rounded-md"
+            ref={rootRef}
+            className="fixed z-50 min-w-[180px] bg-white p-1 rounded-md shadow-md"
             style={{ top: position?.[1], left: position?.[0], display: open ? 'block' : 'none' }}
         >
             <div className="w-full flex-col">
                 <div className="py-1 px-3 hover:bg-black/5 cursor-pointer">Tạm dừng</div>
+                <div className="py-1 px-3 hover:bg-black/5 cursor-pointer">Tạo shortcut</div>
                 <div className="py-1 px-3 hover:bg-black/5 cursor-pointer">Ẩn shortcut</div>
                 <div
                     className="py-1 px-3 hover:bg-black/5 cursor-pointer"
@@ -27,7 +33,14 @@ export function RightMenu({ open, onClose, position }: RightMenuProps) {
                 >
                     Thay đổi màn hình
                 </div>
-                <div className="py-1 px-3 hover:bg-black/5 cursor-pointer">Thoát</div>
+                <div
+                    className="py-1 px-3 hover:bg-black/5 cursor-pointer"
+                    onClick={() => {
+                        sendIPC('close-main-window', null);
+                    }}
+                >
+                    Đóng nền
+                </div>
             </div>
         </div>
     );

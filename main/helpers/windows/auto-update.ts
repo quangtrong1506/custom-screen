@@ -1,8 +1,8 @@
 import { autoUpdater } from 'electron-updater';
-import { sendWebContents } from './web-contents';
 import { app, ipcMain } from 'electron';
+import { log } from '../dev-log';
+import { sendWebContents } from '../web-contents';
 import { showNativeNotification } from './notifications';
-import { log } from './dev-log';
 
 autoUpdater.setFeedURL({
     provider: 'github',
@@ -82,34 +82,6 @@ function setupAutoUpdater(mainWindow: Electron.BrowserWindow) {
     setInterval(() => {
         autoUpdater.checkForUpdates();
     }, 15 * 60 * 1000);
-
-    setInterval(() => {
-        showNativeNotification({
-            body: 'Cập nhật phần mềm',
-            title: 'Cập nhật',
-            onClick: () => {
-                autoUpdater.checkForUpdates();
-                log.info('Kiểm tra cập nhật');
-                console.log('Kiểm tra cập nhật');
-            },
-
-            onClose() {
-                log.info('CLose');
-                console.log('CLose');
-            },
-            actions: [
-                {
-                    type: 'button',
-                    text: 'Kiểm tra',
-                    onClick: () => {
-                        autoUpdater.checkForUpdates();
-                        log.info('Button Kiểm tra cập nhật');
-                        console.log('Button Kiểm tra cập nhật');
-                    },
-                },
-            ],
-        });
-    }, 60 * 1000);
 }
 
 ipcMain.on('update', (_e, data) => {

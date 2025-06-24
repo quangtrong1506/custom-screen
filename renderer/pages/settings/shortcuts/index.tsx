@@ -12,6 +12,8 @@ const SettingShortcutPage = () => {
             <div></div>
             <div className="lg:w-[800px] h-[500px] p-3 text-black/70">
                 <div className="flex gap-2 items-center font-medium text-2xl">
+                    <Link href={Routes.Home}>Màn hình chính</Link>
+                    <div>{'>'}</div>
                     <Link href={Routes.Settings}>Cài đặt</Link>
                     <div>{'>'}</div>
                     <Link href={Routes.SettingsShortcuts}>Shortcuts</Link>
