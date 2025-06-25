@@ -60,6 +60,7 @@ if (isProd) {
         e.preventDefault();
         mainWindow.hide();
     });
+    mainWindow.setSkipTaskbar(true);
     // Call
     createTray(mainWindow);
     setupAutoUpdater(mainWindow);

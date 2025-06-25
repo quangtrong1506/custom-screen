@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BgMain, Demo, RightMenu } from '../components';
+import { BgMain, ListShortcut, RightMenu } from '../components';
 
 export default function ShortcutGrid(): JSX.Element {
     const [rightMenu, setRightMenu] = useState({
@@ -29,7 +29,7 @@ export default function ShortcutGrid(): JSX.Element {
     return (
         <>
             <div className="w-screen h-screen fixed top-0 bottom-0 right-0 left-0 z-10 mouse-click-selector">
-                <Demo />
+                <ListShortcut />
             </div>
             <BgMain />
             <RightMenu

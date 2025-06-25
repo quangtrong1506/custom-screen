@@ -1,8 +1,10 @@
 'use client';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useMeasure } from 'react-use';
 import { ShortcutInterface } from './type';
 import { ImageContainer } from '../../image-container';
+import { sendIPC } from '../../../hooks';
+import { RightMenu } from './right-mouse';
 
 export interface ShortcutItemProps {
     className?: string;
@@ -33,6 +35,7 @@ function getFontSize(width: number): string {
 export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
     const { className = '', item } = props;
     const [ref, { width }] = useMeasure<HTMLDivElement>();
+    const [open, setOpen] = useState<boolean>(false);
 
     const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -71,8 +74,9 @@ export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
 
     function handleDoubleClick() {
         cancelHold();
+        sendIPC('send-demo-notification', null);
     }
-
+    if (!item) return <></>;
     return (
         <div
             ref={(node) => {
@@ -85,6 +89,11 @@ export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseLeave}
             onDoubleClick={handleDoubleClick}
+            onContextMenu={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setOpen(true);
+            }}
         >
             <div className="flex w-4/5 justify-center aspect-square overflow-hidden items-center">
                 <ImageContainer className="" src={item.icon || '/images/logo.png'} alt={item.title} />
@@ -98,6 +107,7 @@ export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
             >
                 {item.title}
             </div>
+            <RightMenu open={open} onClose={() => setOpen(false)} item={item} />
         </div>
     );
 }

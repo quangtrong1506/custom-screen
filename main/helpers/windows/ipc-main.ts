@@ -5,6 +5,13 @@ import { log } from '../dev-log';
 import { sendListVideos, sendWebContents } from '../web-contents';
 import { readJsonFile, writeJsonFile } from '../file';
 
+const initShortcutData = {
+    items: [],
+    layout: [],
+    scale: 1,
+    show: true,
+};
+
 export const connectIpcMain = (mainWindow: Electron.BrowserWindow) => {
     log.info('Connect ipcMain');
 
@@ -14,7 +21,6 @@ export const connectIpcMain = (mainWindow: Electron.BrowserWindow) => {
             const savePath = path.join(app.getPath('userData'), 'videos', fileName);
             fs.mkdirSync(path.dirname(savePath), { recursive: true });
             await fs.promises.writeFile(savePath, Buffer.from(buffer));
-            log.info('Đã lưu file:', savePath);
             sendListVideos(mainWindow);
             sendWebContents(mainWindow, 'update-video', { complete: true });
             return { success: true, path: savePath };
@@ -38,6 +44,31 @@ export const connectIpcMain = (mainWindow: Electron.BrowserWindow) => {
         }
     });
 
+    // tải media nền
+    ipcMain.handle('upload-shortcut-media', async (_event, { fileName, buffer }) => {
+        try {
+            const savePath = path.join(app.getPath('userData'), 's-media', fileName);
+            fs.mkdirSync(path.dirname(savePath), { recursive: true });
+            await fs.promises.writeFile(savePath, Buffer.from(buffer));
+            return { success: true, path: savePath.replaceAll('\\', '/') };
+        } catch (error) {
+            log.error(error);
+            throw error;
+        }
+    });
+
+    // xoá media nền
+    ipcMain.handle('delete-shortcut-media', async (event, { fileName }) => {
+        try {
+            const savePath = path.join(app.getPath('userData'), 's-media', fileName);
+            await fs.promises.unlink(savePath);
+            return { success: true };
+        } catch (error) {
+            log.error('Lỗi xoá video:', error);
+            throw error;
+        }
+    });
+
     // lấy danh sách video
     ipcMain.on('get-videos', (event) => {
         sendListVideos(mainWindow);
@@ -46,7 +77,6 @@ export const connectIpcMain = (mainWindow: Electron.BrowserWindow) => {
     // cài nền
     ipcMain.on('get-background', async (event) => {
         try {
-            log.info('get-background');
             const settingsPath = path.join(app.getPath('userData'), 'config', 's.bak');
             let data = await readJsonFile(settingsPath);
             if (data?.background) sendWebContents(mainWindow, 'get-background', data?.background);
@@ -58,10 +88,6 @@ export const connectIpcMain = (mainWindow: Electron.BrowserWindow) => {
 
     ipcMain.handle('set-background', async (event, { fileName, type }) => {
         try {
-            log.info('set-background', {
-                fileName,
-                type,
-            });
             const settingsPath = path.join(app.getPath('userData'), 'config', 's.bak');
             let data = await readJsonFile(settingsPath);
             if (!data) data = {};
@@ -72,6 +98,61 @@ export const connectIpcMain = (mainWindow: Electron.BrowserWindow) => {
             sendWebContents(mainWindow, 'get-background', backgroundPath);
         } catch (error) {
             log.error(error);
+            throw error;
+        }
+    });
+
+    // cài nền
+    ipcMain.handle('get-shortcuts', async () => {
+        try {
+            const settingsPath = path.join(app.getPath('userData'), 'config', 's.bak');
+            const data = await readJsonFile(settingsPath);
+
+            const payload = data?.shortcuts || initShortcutData;
+
+            return payload;
+        } catch (error) {
+            log.error('❌ Lỗi khi xử lý get-shortcuts:', error);
+            throw error;
+        }
+    });
+
+    ipcMain.on('set-scale-background', async (event, { scale }) => {
+        try {
+            const settingsPath = path.join(app.getPath('userData'), 'config', 's.bak');
+            let data = (await readJsonFile(settingsPath)) || {};
+
+            if (!data.shortcuts) {
+                data.shortcuts = initShortcutData;
+            }
+
+            data.shortcuts = {
+                ...data.shortcuts,
+                scale,
+            };
+            await writeJsonFile(settingsPath, data);
+        } catch (error) {
+            log.error(error);
+            throw error;
+        }
+    });
+
+    ipcMain.handle('save-shortcuts', async (e, { ...args }) => {
+        try {
+            const settingsPath = path.join(app.getPath('userData'), 'config', 's.bak');
+            let data = (await readJsonFile(settingsPath)) || {};
+            if (!data.shortcuts) {
+                data.shortcuts = initShortcutData;
+            }
+
+            data.shortcuts = {
+                ...data.shortcuts,
+                ...args,
+            };
+            await writeJsonFile(settingsPath, data);
+            return data;
+        } catch (error) {
+            log.error('❌ Lỗi khi xử lý get-shortcuts:', error);
             throw error;
         }
     });
