@@ -46,6 +46,10 @@ if (isProd) {
 
     if (isProd) {
         await mainWindow.loadURL('app://./');
+        app.setLoginItemSettings({
+            openAtLogin: true,
+            path: app.getPath('exe'),
+        });
     } else {
         const port = process.argv[2];
         await mainWindow.loadURL(`http://localhost:${port}/`);
