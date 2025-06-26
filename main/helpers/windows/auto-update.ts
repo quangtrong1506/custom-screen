@@ -42,7 +42,6 @@ function setupAutoUpdater(mainWindow: Electron.BrowserWindow) {
 
     autoUpdater.on('update-downloaded', (info) => {
         log.info('✅ Đã tải xong cập nhật, sẽ cài đặt khi thoát...');
-        // autoUpdater.quitAndInstall();
         sendWebContents(mainWindow, 'update', {
             confirm: true,
             data: {
@@ -55,9 +54,7 @@ function setupAutoUpdater(mainWindow: Electron.BrowserWindow) {
             body: `Đã có cập nhật phiên bản mới (${info.version}) tự động thoát để cập nhật`,
         });
         setTimeout(() => {
-            mainWindow.destroy();
-            app.relaunch();
-            app.exit(0);
+            autoUpdater.quitAndInstall();
         }, 500);
     });
 
