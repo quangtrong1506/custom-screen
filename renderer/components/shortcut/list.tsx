@@ -47,14 +47,18 @@ export function ListShortcut() {
             if (e.key === '=') {
                 setShortcutConfig((prev) => {
                     const newScale = prev.scale + 0.2 > 2 ? 2 : prev.scale + 0.2;
-                    sendIPC('set-scale-background', newScale);
+                    sendIPC('set-scale-background', {
+                        scale: newScale,
+                    });
                     return { ...prev, scale: newScale };
                 });
             }
             if (e.key === '-') {
                 setShortcutConfig((prev) => {
                     const newScale = prev.scale - 0.2 < 1 ? 1 : prev.scale - 0.2;
-                    sendIPC('set-scale-background', newScale);
+                    sendIPC('set-scale-background', {
+                        scale: newScale,
+                    });
                     return { ...prev, scale: newScale };
                 });
             }
@@ -141,6 +145,7 @@ export function ListShortcut() {
                 showToast('Lỗi xoá ảnh của shortcut (không quan trọng)', 'error');
             });
     };
+    console.log(shortcutConfig);
 
     if (shortcutConfig.screen === 0 || shortcutConfig.cols < 1 || shortcutConfig.rows < 1 || !shortcutConfig.show)
         return null;
