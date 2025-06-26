@@ -1,8 +1,8 @@
 import { useRouter } from 'next/navigation';
 import { Routes } from '../../../config';
 import { useClickAway } from 'react-use';
-import { useRef } from 'react';
-import { sendIPC } from '../../../hooks';
+import { useEffect, useRef, useState } from 'react';
+import { sendIPC, sendIpcInvike } from '../../../hooks';
 import { eventBus } from '../../../libs';
 import { ShortcutInterface } from '../../shortcut/item/type';
 
@@ -19,11 +19,23 @@ interface RightMenuProps {
 export function RightMenu({ open, onClose, position }: RightMenuProps) {
     const router = useRouter();
     const rootRef = useRef<HTMLDivElement>(null);
+    const [showShortcut, setShowShortcut] = useState<boolean>(false);
+    const [play, setPlay] = useState<boolean>(false);
     useClickAway(rootRef, () => onClose?.());
     const handleCreateShortcut = () => {
         onClose?.();
         eventBus.emit('create-shortcut', null);
     };
+
+    useEffect(() => {
+        sendIpcInvike('get-shortcuts', null)
+            ?.then((data: { scale: number; items: any; show: boolean; layout: any }) => {
+                console.log(data);
+                setShowShortcut(data.show);
+            })
+            .catch((err) => console.log(err));
+    }, []);
+
     return (
         <div
             ref={rootRef}
@@ -31,11 +43,21 @@ export function RightMenu({ open, onClose, position }: RightMenuProps) {
             style={{ top: position?.[1], left: position?.[0], display: open ? 'block' : 'none' }}
         >
             <div className="w-full flex-col">
-                <div className="py-1 px-3 hover:bg-black/5 cursor-pointer">Tạm dừng</div>
+                <div
+                    className="py-1 px-3 hover:bg-black/5 cursor-pointer"
+                    onClick={() => {
+                        setPlay(!play);
+                        eventBus.emit('play-bg', !play);
+                    }}
+                >
+                    {play ? 'Tạm dừng' : 'Phát'}
+                </div>
                 <div className="py-1 px-3 hover:bg-black/5 cursor-pointer" onClick={handleCreateShortcut}>
                     Tạo shortcut
                 </div>
-                <div className="py-1 px-3 hover:bg-black/5 cursor-pointer">Ẩn shortcut</div>
+                <div className="py-1 px-3 hover:bg-black/5 cursor-pointer">
+                    {showShortcut ? 'Ẩn' : 'Hiện'} shortcuts
+                </div>
                 <div
                     className="py-1 px-3 hover:bg-black/5 cursor-pointer"
                     onClick={() => router.push(Routes.SettingsBackground)}

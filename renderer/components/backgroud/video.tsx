@@ -1,6 +1,7 @@
 // src/components/video.tsx
 import { useEffect, useRef } from 'react';
 import { sendIPC, useIPCKey } from '../../hooks';
+import { eventBus } from '../../libs';
 
 export function Video() {
     const ipc = useIPCKey<string>('get-background');
@@ -8,6 +9,19 @@ export function Video() {
 
     useEffect(() => {
         sendIPC('get-background', null);
+        const handlePlay = (check: boolean) => {
+            if (videoRef.current) {
+                if (check) {
+                    videoRef.current.play();
+                } else {
+                    videoRef.current.pause();
+                }
+            }
+        };
+        eventBus.on('play-bg', handlePlay);
+        return () => {
+            eventBus.off('play-bg', handlePlay);
+        };
     }, []);
 
     useEffect(() => {
