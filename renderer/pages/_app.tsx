@@ -5,6 +5,7 @@ import Head from 'next/head';
 import { ToastContainer } from 'react-toastify';
 import '../styles/globals.css';
 import { Fragment } from 'react';
+import { Emit } from '../components/_common';
 
 function MyApp({ Component, pageProps }: AppProps) {
     return (
@@ -21,6 +22,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                 <Component {...pageProps} />
                 <ToastContainer position="bottom-right" closeOnClick={false} theme="light" />
             </div>
+            <Emit />
         </Fragment>
     );
 }

@@ -17,8 +17,6 @@ export function UploadVideo() {
             alert('Vui lòng chọn đúng định dạng video');
             return;
         }
-
-        console.log('Dropped file:', file);
     }
 
     async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>): Promise<void> {

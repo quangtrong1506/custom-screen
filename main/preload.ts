@@ -16,6 +16,9 @@ const handler = {
     invoke<T = unknown>(channel: string, data?: unknown): Promise<T> {
         return ipcRenderer.invoke(channel, data);
     },
+    off(channel: string, callback: Callback) {
+        ipcRenderer.off(channel, callback);
+    },
 };
 
 contextBridge.exposeInMainWorld('ipc', handler);

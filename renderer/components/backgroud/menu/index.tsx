@@ -3,8 +3,11 @@ import { Routes } from '../../../config';
 import { useClickAway } from 'react-use';
 import { useRef } from 'react';
 import { sendIPC } from '../../../hooks';
+import { eventBus } from '../../../libs';
+import { ShortcutInterface } from '../../shortcut/item/type';
 
 interface RightMenuProps {
+    item?: ShortcutInterface;
     open?: boolean;
     onClose?: () => void;
     position?: [number, number];
@@ -17,6 +20,10 @@ export function RightMenu({ open, onClose, position }: RightMenuProps) {
     const router = useRouter();
     const rootRef = useRef<HTMLDivElement>(null);
     useClickAway(rootRef, () => onClose?.());
+    const handleCreateShortcut = () => {
+        onClose?.();
+        eventBus.emit('create-shortcut', null);
+    };
     return (
         <div
             ref={rootRef}
@@ -25,7 +32,9 @@ export function RightMenu({ open, onClose, position }: RightMenuProps) {
         >
             <div className="w-full flex-col">
                 <div className="py-1 px-3 hover:bg-black/5 cursor-pointer">Tạm dừng</div>
-                <div className="py-1 px-3 hover:bg-black/5 cursor-pointer">Tạo shortcut</div>
+                <div className="py-1 px-3 hover:bg-black/5 cursor-pointer" onClick={handleCreateShortcut}>
+                    Tạo shortcut
+                </div>
                 <div className="py-1 px-3 hover:bg-black/5 cursor-pointer">Ẩn shortcut</div>
                 <div
                     className="py-1 px-3 hover:bg-black/5 cursor-pointer"
