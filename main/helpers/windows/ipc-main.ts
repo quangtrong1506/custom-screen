@@ -1,9 +1,10 @@
-import { app, ipcMain } from 'electron';
+import { app, ipcMain, shell } from 'electron';
 import path from 'path';
 import * as fs from 'fs';
 import { log } from '../dev-log';
 import { sendListVideos, sendWebContents } from '../web-contents';
 import { readJsonFile, writeJsonFile } from '../file';
+import { execFile, execFileSync } from 'child_process';
 
 const initShortcutData = {
     items: [],
@@ -58,10 +59,10 @@ export const connectIpcMain = (mainWindow: Electron.BrowserWindow) => {
     });
 
     // xoá media nền
-    ipcMain.handle('delete-shortcut-media', async (event, { fileName }) => {
+    ipcMain.handle('delete-shortcut-media', async (event, { path: filePath }) => {
         try {
-            const savePath = path.join(app.getPath('userData'), 's-media', fileName);
-            await fs.promises.unlink(savePath);
+            if (!fs.existsSync(filePath)) return;
+            await fs.promises.unlink(filePath);
             return { success: true };
         } catch (error) {
             log.error('Lỗi xoá video:', error);
@@ -153,6 +154,19 @@ export const connectIpcMain = (mainWindow: Electron.BrowserWindow) => {
             return data;
         } catch (error) {
             log.error('❌ Lỗi khi xử lý get-shortcuts:', error);
+            throw error;
+        }
+    });
+
+    ipcMain.handle('open-shortcut-app', async (e, { path: shortcutPath }) => {
+        try {
+            if (fs.existsSync(shortcutPath)) execFile(shortcutPath);
+            else {
+                shell.openPath(shortcutPath);
+            }
+            return true;
+        } catch (error) {
+            log.error('❌ Open app error:', error);
             throw error;
         }
     });

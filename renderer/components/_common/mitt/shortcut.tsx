@@ -32,8 +32,6 @@ const FormShortcut = ({ defaultValue, onClose }: FormShortcutProps) => {
     const [path, setPath] = useState<string>(defaultValue?.path || '');
     const [icon, setIcon] = useState<File | null>(null);
     const handleCreateShortcut = async () => {
-        // const arrayBuffer = await file.arrayBuffer();
-        // buffer: Buffer.from(arrayBuffer);
         if (!title || !path) {
             alert('Vui lòng nhập đủ thông tin');
             return;
@@ -53,7 +51,8 @@ const FormShortcut = ({ defaultValue, onClose }: FormShortcutProps) => {
 
         onClose?.();
         eventBus.emit('on-create-shortcut', {
-            id: Math.random().toString().slice(2),
+            ...defaultValue,
+            id: defaultValue?.id || Math.random().toString().slice(2),
             title,
             path,
             icon: newIcon || icon || '/images/logo.png',
@@ -62,7 +61,7 @@ const FormShortcut = ({ defaultValue, onClose }: FormShortcutProps) => {
     return createPortal(
         <div className="fixed z-[999999] top-0 left-0 inset-0 flex items-center justify-center bg-black/50">
             <div className="w-[500px] h-[360px] bg-white rounded-md p-3">
-                <h1 className="text-center font-semibold text-3xl mt-3">Tạo shortcut</h1>
+                <h1 className="text-center font-semibold text-3xl mt-3">{defaultValue ? 'Sửa' : 'Tạo'} shortcut</h1>
                 <div className="flex flex-col items-center mt-6 px-8 gap-3">
                     <input
                         type="text"
@@ -109,7 +108,7 @@ const FormShortcut = ({ defaultValue, onClose }: FormShortcutProps) => {
                             Huỷ
                         </button>
                         <button className="bg-cyan-600 text-white py-1 px-3 rounded-md" onClick={handleCreateShortcut}>
-                            Tạo
+                            {defaultValue ? 'Cập nhật' : 'Tạo'}
                         </button>
                     </div>
                 </div>

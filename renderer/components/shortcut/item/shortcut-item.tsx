@@ -9,6 +9,8 @@ import { RightMenu } from './right-mouse';
 export interface ShortcutItemProps {
     className?: string;
     item: ShortcutInterface;
+    onClick?: (id?: string) => void;
+    onDelete?: (id?: string) => void;
 }
 
 const FONT_SIZE = {
@@ -107,7 +109,7 @@ export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
             >
                 {item.title}
             </div>
-            <RightMenu open={open} onClose={() => setOpen(false)} item={item} />
+            <RightMenu open={open} onClose={() => setOpen(false)} item={item} onDelete={props.onDelete} />
         </div>
     );
 }

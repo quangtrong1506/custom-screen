@@ -10,6 +10,7 @@ import { getNextAvailablePosition } from '../../helpers/grid';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import { ShortcutInterface } from './item/type';
+import { showToast } from '../../helpers';
 
 const ITEM_WIDTH = 100;
 const ITEM_HEIGHT = 110;
@@ -61,18 +62,26 @@ export function ListShortcut() {
 
         const hadleEmitFormShortcut = (data: ShortcutInterface) => {
             setShortcutConfig((prev) => {
-                const position = getNextAvailablePosition(prev.layout, prev.cols, prev.rows);
-                const newItem = {
-                    i: data.id,
-                    x: position.x,
-                    y: position.y,
-                    w: 1,
-                    h: 1,
-                };
+                const items = [...prev.items];
+                const layouts = [...prev.layout];
+                let indexFind = items.findIndex((item) => item.id === data.id);
+                if (indexFind >= 0) {
+                    items[indexFind] = data;
+                } else {
+                    const position = getNextAvailablePosition(prev.layout, prev.cols, prev.rows);
+                    const newItem = {
+                        i: data.id,
+                        x: position.x,
+                        y: position.y,
+                        w: 1,
+                        h: 1,
+                    };
+                    layouts.push(newItem);
+                    items.push(data);
+                }
 
-                const newLayout = [...prev.layout, newItem];
-                saveShortcutToLocal({ items: [...prev.items, data], layout: newLayout });
-                return { ...prev, layout: newLayout, items: [...prev.items, data] };
+                saveShortcutToLocal({ items, layout: layouts });
+                return { ...prev, layout: layouts, items };
             });
         };
 
@@ -116,7 +125,22 @@ export function ListShortcut() {
         setShortcutConfig((prev) => ({ ...prev, layout: newLayout }));
         saveShortcutToLocal({ layout: newLayout });
     }
-    console.log(shortcutConfig);
+
+    const handleDelete = (id?: string) => {
+        if (!id) return;
+        const newLayout = shortcutConfig.layout.filter((item) => item.i !== id);
+        const newItems = shortcutConfig.items.filter((item) => item.id !== id);
+        setShortcutConfig((prev) => ({ ...prev, layout: newLayout, items: newItems }));
+        saveShortcutToLocal({ layout: newLayout, items: newItems });
+        sendIpcInvike('delete-shortcut-media', {
+            path: shortcutConfig.items.find((item) => item.id === id)?.icon,
+        })
+            .then(() => {})
+            .catch((e) => {
+                console.log(e);
+                showToast('Lỗi xoá ảnh của shortcut (không quan trọng)', 'error');
+            });
+    };
 
     if (shortcutConfig.screen === 0 || shortcutConfig.cols < 1 || shortcutConfig.rows < 1 || !shortcutConfig.show)
         return null;
@@ -140,7 +164,10 @@ export function ListShortcut() {
                 >
                     {shortcutConfig.layout?.map((item) => (
                         <div key={item.i}>
-                            <ShortcutItem item={shortcutConfig.items.find((i) => i.id === item.i)} />
+                            <ShortcutItem
+                                item={shortcutConfig.items.find((i) => i.id === item.i)}
+                                onDelete={handleDelete}
+                            />
                         </div>
                     ))}
                 </GridLayout>
