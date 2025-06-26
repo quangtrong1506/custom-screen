@@ -2,7 +2,7 @@
     "private": true,
     "name": "live-wallpaper-for-windows",
     "description": "Live wallpaper for Windows",
-    "version": "1.0.11",
+    "version": "1.0.12",
     "author": "QuangTrong1506 <quangtrong1506@gmail.com>",
     "main": "app/background.js",
     "type": "commonjs",
