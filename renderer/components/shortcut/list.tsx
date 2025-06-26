@@ -47,14 +47,18 @@ export function ListShortcut() {
             if (e.key === '=') {
                 setShortcutConfig((prev) => {
                     const newScale = prev.scale + 0.2 > 2 ? 2 : prev.scale + 0.2;
-                    sendIPC('set-scale-background', newScale);
+                    sendIPC('set-scale-background', {
+                        scale: newScale,
+                    });
                     return { ...prev, scale: newScale };
                 });
             }
             if (e.key === '-') {
                 setShortcutConfig((prev) => {
                     const newScale = prev.scale - 0.2 < 1 ? 1 : prev.scale - 0.2;
-                    sendIPC('set-scale-background', newScale);
+                    sendIPC('set-scale-background', {
+                        scale: newScale,
+                    });
                     return { ...prev, scale: newScale };
                 });
             }
