@@ -141,6 +141,7 @@ export function ListShortcut() {
                 showToast('Lỗi xoá ảnh của shortcut (không quan trọng)', 'error');
             });
     };
+    console.log(shortcutConfig);
 
     if (shortcutConfig.screen === 0 || shortcutConfig.cols < 1 || shortcutConfig.rows < 1 || !shortcutConfig.show)
         return null;
