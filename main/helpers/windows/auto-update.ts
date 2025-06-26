@@ -13,7 +13,7 @@ autoUpdater.setFeedURL({
     publishAutoUpdate: true,
     private: false,
 });
-autoUpdater.logger = log;
+// autoUpdater.logger = log;
 let mw: Electron.BrowserWindow | null = null;
 function setupAutoUpdater(mainWindow: Electron.BrowserWindow) {
     mw = mainWindow;
@@ -21,7 +21,7 @@ function setupAutoUpdater(mainWindow: Electron.BrowserWindow) {
     autoUpdater.autoInstallOnAppQuit = true;
 
     autoUpdater.on('checking-for-update', () => {
-        console.log('🧐 Đang kiểm tra cập nhật...');
+        // console.log('🧐 Đang kiểm tra cập nhật...');
     });
 
     autoUpdater.on('update-available', (info) => {
@@ -30,10 +30,6 @@ function setupAutoUpdater(mainWindow: Electron.BrowserWindow) {
             new: true,
             data: info,
         });
-    });
-
-    autoUpdater.on('update-not-available', (info) => {
-        console.log('🆕 Có bản cập nhật mới:', info);
     });
 
     autoUpdater.on('error', (err) => {
@@ -55,27 +51,14 @@ function setupAutoUpdater(mainWindow: Electron.BrowserWindow) {
             },
         });
         showNativeNotification({
-            title: 'Cập nhật',
-            body: `Đã có cập nhật phiên bản mới (${info.version})`,
-            onClick() {
-                log.info('Cài đặt cập nhật');
-                mainWindow.destroy();
-                app.relaunch();
-                app.exit(0);
-            },
-
-            actions: [
-                {
-                    type: 'button',
-                    text: 'Cài đặt',
-                    onClick: () => {
-                        mainWindow.destroy();
-                        app.relaunch();
-                        app.exit(0);
-                    },
-                },
-            ],
+            title: `Cập nhật phiên bản(${info.version})`,
+            body: `Đã có cập nhật phiên bản mới (${info.version}) tự động thoát để cập nhật`,
         });
+        setTimeout(() => {
+            mainWindow.destroy();
+            app.relaunch();
+            app.exit(0);
+        }, 500);
     });
 
     autoUpdater.checkForUpdates();
