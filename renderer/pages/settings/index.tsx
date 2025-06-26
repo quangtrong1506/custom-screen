@@ -1,8 +1,23 @@
 import Link from 'next/link';
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { Routes } from '../../config';
+import { sendIpcInvike } from '../../hooks';
+import { showToast } from '../../helpers';
 
 export default function SettingPage() {
+    const [appInfo, setAppInfo] = useState({
+        version: '0.0.0',
+        name: '',
+        platform: '',
+    });
+    useEffect(() => {
+        sendIpcInvike('get-app-info', null)
+            .then((data) => {
+                if (!data) return;
+                setAppInfo(data as any);
+            })
+            .catch((err) => console.log(err));
+    }, []);
     return (
         <div className="relative z-10 w-full h-full flex justify-center bg-gray-50">
             <div className="lg:w-[800px] h-full p-3 text-black/70">
@@ -25,6 +40,26 @@ export default function SettingPage() {
                         >
                             Video nền
                         </Link>
+                        <span className="w-full px-3 py-2 border border-black/10 rounded-md">
+                            Version: {appInfo.version}{' '}
+                            <button
+                                className="px-3 py-1 text-blue-500"
+                                onClick={() => {
+                                    sendIpcInvike('check-for-update', null)
+                                        .then((data) => {
+                                            console.log(data);
+                                            if (data)
+                                                showToast(
+                                                    `Đã có phiên bản mới (${(data as any)?.updateInfo?.version})`,
+                                                    'success'
+                                                );
+                                        })
+                                        .catch((err) => console.log(err));
+                                }}
+                            >
+                                Check update
+                            </button>
+                        </span>
                     </div>
                 </div>
             </div>

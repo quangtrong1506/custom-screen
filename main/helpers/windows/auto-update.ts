@@ -1,5 +1,5 @@
 import { autoUpdater } from 'electron-updater';
-import { app, ipcMain } from 'electron';
+import { ipcMain } from 'electron';
 import { log } from '../dev-log';
 import { sendWebContents } from '../web-contents';
 import { showNativeNotification } from './notifications';
@@ -19,13 +19,14 @@ function setupAutoUpdater(mainWindow: Electron.BrowserWindow, callbackDownload?:
     mw = mainWindow;
     autoUpdater.autoDownload = true;
     autoUpdater.autoInstallOnAppQuit = true;
+    autoUpdater.autoRunAppAfterInstall = true;
 
     autoUpdater.on('checking-for-update', () => {
         // console.log('🧐 Đang kiểm tra cập nhật...');
     });
 
     autoUpdater.on('update-available', (info) => {
-        log.info('🆕 Có bản cập nhật mới:', info);
+        log.info('🆕 Có bản cập nhật mới:', info.version);
         sendWebContents(mainWindow, 'update', {
             new: true,
             data: info,
@@ -65,8 +66,9 @@ function setupAutoUpdater(mainWindow: Electron.BrowserWindow, callbackDownload?:
     }, 15 * 60 * 1000);
 }
 
-ipcMain.on('update', (_e, data) => {
-    if (data?.check) autoUpdater.checkForUpdates();
+ipcMain.handle('check-for-update', async (_e, data) => {
+    const a = await autoUpdater.checkForUpdates();
+    return a;
 });
 
 export { setupAutoUpdater };

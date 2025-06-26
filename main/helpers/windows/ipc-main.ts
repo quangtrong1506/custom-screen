@@ -198,4 +198,12 @@ export const connectIpcMain = (mainWindow: Electron.BrowserWindow) => {
     ipcMain.on('close-main-window', async (event) => {
         mainWindow.hide();
     });
+
+    ipcMain.handle('get-app-info', async () => {
+        return {
+            name: app.name,
+            version: app.getVersion(),
+            platform: process.platform,
+        };
+    });
 };

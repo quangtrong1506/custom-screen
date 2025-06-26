@@ -40,7 +40,7 @@ app.setName('Live wallpaper for Windows');
         frame: false,
     });
 
-    (mainWindow as any).setAlwaysOnBottom(true);
+    // (mainWindow as any).setAlwaysOnBottom(true);
 
     mainWindow.setMenu(null);
     mainWindow.maximize();
@@ -64,6 +64,8 @@ app.setName('Live wallpaper for Windows');
     };
     mainWindow.addListener('close', handleClose);
     mainWindow.setSkipTaskbar(true);
+    mainWindow.blur();
+
     // Call
     createTray(mainWindow);
     setupAutoUpdater(mainWindow, () => {
