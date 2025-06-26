@@ -66,6 +66,12 @@ export function RightMenu({ open, onClose, position }: RightMenuProps) {
                 </div>
                 <div
                     className="py-1 px-3 hover:bg-black/5 cursor-pointer"
+                    onClick={() => router.push(Routes.SettingsShortcuts)}
+                >
+                    Danh sách shortcuts
+                </div>
+                <div
+                    className="py-1 px-3 hover:bg-black/5 cursor-pointer"
                     onClick={() => {
                         sendIPC('close-main-window', null);
                     }}
