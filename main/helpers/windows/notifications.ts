@@ -29,7 +29,7 @@ export function showNativeNotification(options: Options): void {
         title: title,
         body: body,
         icon: trayIcon,
-        actions: actions.map((action) => ({ type: action.type, text: action.text })) || [],
+        actions: actions?.map((action) => ({ type: action.type, text: action.text })) || [],
         closeButtonText: 'Đóng',
     });
 
