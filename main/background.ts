@@ -14,6 +14,7 @@ if (isProd) {
     // app.setPath('userData', `${app.getPath('userData')} (development)`);
 }
 
+app.setName('Live wallpaper for Windows');
 (async () => {
     if (!app.requestSingleInstanceLock()) app.quit();
     else
