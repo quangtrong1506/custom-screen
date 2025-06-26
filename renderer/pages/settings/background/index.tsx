@@ -18,9 +18,12 @@ const SettingShortcutPage = () => {
         }[];
         total: number;
     }>('get-videos');
+    const videoBgCurrent = useIPCKey<string>('get-background');
+    console.log(videoBgCurrent);
 
     useEffect(() => {
         sendIPC('get-videos', null);
+        sendIPC('get-background', null);
     }, []);
 
     return (

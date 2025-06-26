@@ -33,13 +33,34 @@ export const connectIpcMain = (mainWindow: Electron.BrowserWindow) => {
 
     // xoá video nền
     ipcMain.handle('delete-video', async (event, { fileName }) => {
+        const savePath = path.join(app.getPath('userData'), 'videos', fileName);
+
         try {
-            const savePath = path.join(app.getPath('userData'), 'videos', fileName);
             await fs.promises.unlink(savePath);
             log.info('Đã xóa file:', savePath);
             sendListVideos(mainWindow);
             return { success: true };
-        } catch (error) {
+        } catch (error: any) {
+            const code = error.code;
+
+            // Các lỗi thường gặp do file bị chiếm quyền
+            const shouldRetry = ['EBUSY', 'EPERM', 'EACCES'].includes(code);
+
+            if (shouldRetry) {
+                log.warn(`File đang bị khoá, thử lại sau 2 giây: ${savePath}`);
+                await new Promise((r) => setTimeout(r, 2000));
+
+                try {
+                    await fs.promises.unlink(savePath);
+                    log.info('Xoá lại thành công:', savePath);
+                    sendListVideos(mainWindow);
+                    return { success: true };
+                } catch (retryError) {
+                    log.error('Xoá lần 2 vẫn lỗi:', retryError);
+                    throw retryError;
+                }
+            }
+
             log.error('Lỗi xoá video:', error);
             throw error;
         }
@@ -93,10 +114,13 @@ export const connectIpcMain = (mainWindow: Electron.BrowserWindow) => {
             let data = await readJsonFile(settingsPath);
             if (!data) data = {};
             const backgroundPath =
-                type === 'default' ? '/videos/0.mp4' : path.join(app.getPath('userData'), 'videos', fileName);
+                type === 'default'
+                    ? '/videos/0.mp4'
+                    : path.join(app.getPath('userData'), 'videos', fileName).replaceAll('\\', '/');
             data.background = backgroundPath;
             await writeJsonFile(settingsPath, data);
             sendWebContents(mainWindow, 'get-background', backgroundPath);
+            return { success: true };
         } catch (error) {
             log.error(error);
             throw error;

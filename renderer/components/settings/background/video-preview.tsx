@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ZoomPopup } from '../../_common';
 import { FaPause, FaPlay } from 'react-icons/fa6';
-import { sendIpcInvike } from '../../../hooks';
+import { sendIPC, sendIpcInvike, useIPCKey } from '../../../hooks';
 import { showPromiseToast } from '../../../helpers';
 
 interface VideoPreviewProps {
@@ -19,6 +19,7 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({ src, name, type }) =
     const [position, setPosition] = useState<[number, number]>([0, 0]);
     const [play, setPlay] = useState<boolean>(false);
     const videoRef = useRef<HTMLVideoElement>(null);
+    const videoBgCurrent = useIPCKey<string>('get-background');
 
     useEffect(() => {
         setInterval(() => {
@@ -28,6 +29,7 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({ src, name, type }) =
                 }
             }
         }, 500);
+        sendIPC('get-background', null);
     }, []);
 
     function handleSetBackground() {
@@ -42,8 +44,16 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({ src, name, type }) =
             loading: 'Loading...',
         });
     }
+
     function handleDelete() {
         setOpen(false);
+
+        if (videoBgCurrent === src) {
+            sendIpcInvike('set-background', {
+                type: 'default',
+            });
+        }
+
         const promise = sendIpcInvike('delete-video', {
             fileName: name,
             path: src,
