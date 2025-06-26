@@ -25,7 +25,6 @@ app.setName('Live wallpaper for Windows');
                 mainWindow.focus();
             }
         });
-
     await app.whenReady();
     const primaryDisplay = screen.getPrimaryDisplay();
     const { width, height } = primaryDisplay.workAreaSize;
@@ -40,6 +39,8 @@ app.setName('Live wallpaper for Windows');
         maximizable: true,
         frame: false,
     });
+
+    (mainWindow as any).setAlwaysOnBottom(true);
 
     mainWindow.setMenu(null);
     mainWindow.maximize();
@@ -57,14 +58,17 @@ app.setName('Live wallpaper for Windows');
         mainWindow.webContents.openDevTools();
     }
     // Event
-    mainWindow.addListener('close', (e) => {
-        e.preventDefault();
+    const handleClose = (event?: Electron.Event) => {
+        event.preventDefault();
         mainWindow.hide();
-    });
+    };
+    mainWindow.addListener('close', handleClose);
     mainWindow.setSkipTaskbar(true);
     // Call
     createTray(mainWindow);
-    setupAutoUpdater(mainWindow);
+    setupAutoUpdater(mainWindow, () => {
+        mainWindow.removeListener('close', handleClose);
+    });
     connectIpcMain(mainWindow);
 })();
 

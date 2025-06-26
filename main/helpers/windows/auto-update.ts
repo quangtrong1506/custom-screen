@@ -15,7 +15,7 @@ autoUpdater.setFeedURL({
 });
 // autoUpdater.logger = log;
 let mw: Electron.BrowserWindow | null = null;
-function setupAutoUpdater(mainWindow: Electron.BrowserWindow) {
+function setupAutoUpdater(mainWindow: Electron.BrowserWindow, callbackDownload?: () => void) {
     mw = mainWindow;
     autoUpdater.autoDownload = true;
     autoUpdater.autoInstallOnAppQuit = true;
@@ -41,6 +41,7 @@ function setupAutoUpdater(mainWindow: Electron.BrowserWindow) {
     });
 
     autoUpdater.on('update-downloaded', (info) => {
+        callbackDownload?.();
         log.info('✅ Đã tải xong cập nhật, sẽ cài đặt khi thoát...');
         sendWebContents(mainWindow, 'update', {
             confirm: true,
@@ -55,7 +56,7 @@ function setupAutoUpdater(mainWindow: Electron.BrowserWindow) {
         });
         setTimeout(() => {
             autoUpdater.quitAndInstall();
-        }, 500);
+        }, 1000);
     });
 
     autoUpdater.checkForUpdates();
@@ -66,13 +67,6 @@ function setupAutoUpdater(mainWindow: Electron.BrowserWindow) {
 
 ipcMain.on('update', (_e, data) => {
     if (data?.check) autoUpdater.checkForUpdates();
-});
-ipcMain.on('update', (_e, data) => {
-    if (data?.confirm) {
-        mw.destroy();
-        app.relaunch();
-        app.exit(0);
-    }
 });
 
 export { setupAutoUpdater };
