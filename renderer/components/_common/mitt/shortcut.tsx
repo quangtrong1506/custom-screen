@@ -36,7 +36,7 @@ const FormShortcut = ({ defaultValue, onClose }: FormShortcutProps) => {
             alert('Vui lòng nhập đủ thông tin');
             return;
         }
-        let newIcon = '';
+        let newIcon = defaultValue?.icon;
         if (icon && typeof icon !== 'string') {
             const arrayBuffer = await icon.arrayBuffer();
             let buffer = Buffer.from(arrayBuffer);
