@@ -101,11 +101,12 @@ export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
                 <ImageContainer className="" src={item.icon || '/images/logo.png'} alt={item.title} />
             </div>
             <div
-                className="line-clamp-2 text-center text-white"
+                className="line-clamp-2 text-center text-white mt-1"
                 style={{
                     fontSize: getFontSize(width),
                     textShadow: '2px 2px 4px rgba(0, 0, 0, 0.4)',
                 }}
+                title={item.title}
             >
                 {item.title}
             </div>

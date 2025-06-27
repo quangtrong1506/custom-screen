@@ -48,11 +48,14 @@ export default function SettingPage() {
                                     sendIpcInvike('check-for-update', null)
                                         .then((data) => {
                                             console.log(data);
-                                            if (data)
+                                            if (data && (data as any)?.updateInfo?.version !== appInfo.version)
                                                 showToast(
-                                                    `Đã có phiên bản mới (${(data as any)?.updateInfo?.version})`,
+                                                    `Đã có phiên bản mới (${
+                                                        (data as any)?.updateInfo?.version
+                                                    }) Hệ thống sẽ tự động cập nhật`,
                                                     'success'
                                                 );
+                                            else showToast('Không có bản cập nhật', 'info');
                                         })
                                         .catch((err) => console.log(err));
                                 }}

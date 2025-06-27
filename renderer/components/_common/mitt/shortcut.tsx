@@ -83,7 +83,7 @@ const FormShortcut = ({ defaultValue, onClose }: FormShortcutProps) => {
                         <div className="w-24 h-24">
                             <Image
                                 className="w-full aspect-square object-cover"
-                                src={(icon && URL.createObjectURL(icon)) || '/images/logo.png'}
+                                src={defaultValue?.icon || (icon && URL.createObjectURL(icon)) || '/images/logo.png'}
                                 alt="Logo image"
                                 width={256}
                                 height={256}
