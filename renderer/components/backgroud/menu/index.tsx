@@ -20,7 +20,7 @@ export function RightMenu({ open, onClose, position }: RightMenuProps) {
     const router = useRouter();
     const rootRef = useRef<HTMLDivElement>(null);
     const [showShortcut, setShowShortcut] = useState<boolean>(false);
-    const [play, setPlay] = useState<boolean>(false);
+    const [play, setPlay] = useState<boolean>(true);
     useClickAway(rootRef, () => onClose?.());
     const handleCreateShortcut = () => {
         onClose?.();
@@ -64,11 +64,8 @@ export function RightMenu({ open, onClose, position }: RightMenuProps) {
                 >
                     Thay đổi màn hình
                 </div>
-                <div
-                    className="py-1 px-3 hover:bg-black/5 cursor-pointer"
-                    onClick={() => router.push(Routes.SettingsShortcuts)}
-                >
-                    Danh sách shortcuts
+                <div className="py-1 px-3 hover:bg-black/5 cursor-pointer" onClick={() => router.push(Routes.Settings)}>
+                    Cài đặt
                 </div>
                 <div
                     className="py-1 px-3 hover:bg-black/5 cursor-pointer"

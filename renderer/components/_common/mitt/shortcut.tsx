@@ -30,7 +30,7 @@ interface FormShortcutProps {
 const FormShortcut = ({ defaultValue, onClose }: FormShortcutProps) => {
     const [title, setTitle] = useState<string>(defaultValue?.title || '');
     const [path, setPath] = useState<string>(defaultValue?.path || '');
-    const [icon, setIcon] = useState<File | null>(null);
+    const [icon, setIcon] = useState<File | string>(defaultValue?.icon || '');
     const handleCreateShortcut = async () => {
         if (!title || !path) {
             alert('Vui lòng nhập đủ thông tin');
@@ -55,7 +55,7 @@ const FormShortcut = ({ defaultValue, onClose }: FormShortcutProps) => {
             id: defaultValue?.id || Math.random().toString().slice(2),
             title,
             path,
-            icon: newIcon || icon || '/images/logo.png',
+            icon: newIcon || '/images/logo.png',
         });
     };
     return createPortal(
@@ -83,7 +83,11 @@ const FormShortcut = ({ defaultValue, onClose }: FormShortcutProps) => {
                         <div className="w-24 h-24">
                             <Image
                                 className="w-full aspect-square object-cover"
-                                src={defaultValue?.icon || (icon && URL.createObjectURL(icon)) || '/images/logo.png'}
+                                src={
+                                    (icon instanceof File && URL.createObjectURL(icon)) ||
+                                    defaultValue?.icon ||
+                                    '/images/logo.png'
+                                }
                                 alt="Logo image"
                                 width={256}
                                 height={256}

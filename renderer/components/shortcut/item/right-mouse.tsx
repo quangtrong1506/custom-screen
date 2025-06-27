@@ -35,7 +35,7 @@ export function RightMenu({ open, onClose, item, onDelete }: RightMenuProps) {
     return (
         <div
             ref={rootRef}
-            className="absolute z-50 min-w-[80px] bg-white p-1 rounded-md shadow-md top-1/3 left-2/3"
+            className="absolute z-[99999] min-w-[80px] bg-white p-1 rounded-md shadow-md top-1/3 left-2/3"
             style={{ display: open ? 'block' : 'none' }}
         >
             <div className="w-full flex-col">
