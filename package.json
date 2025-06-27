@@ -3,7 +3,7 @@
     "name": "live-wallpaper-for-windows",
     "description": "Live wallpaper for Windows",
     "productName": "Live wallpaper for Windows",
-    "version": "1.0.19",
+    "version": "1.0.20",
     "author": "QuangTrong1506 <quangtrong1506@gmail.com>",
     "main": "app/background.js",
     "type": "commonjs",
