@@ -3,8 +3,9 @@ import React, { useRef, useState } from 'react';
 import { useMeasure } from 'react-use';
 import { ShortcutInterface } from './type';
 import { ImageContainer } from '../../image-container';
-import { sendIPC } from '../../../hooks';
+import { sendIPC, sendIpcInvike } from '../../../hooks';
 import { RightMenu } from './right-mouse';
+import { showToast } from '../../../helpers';
 
 export interface ShortcutItemProps {
     className?: string;
@@ -76,8 +77,15 @@ export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
 
     function handleDoubleClick() {
         cancelHold();
-        sendIPC('send-demo-notification', null);
+        sendIpcInvike('open-shortcut-app', {
+            path: item?.path,
+        })
+            .then(() => {})
+            .catch(() => {
+                showToast('Không tìm thấy ứng dụng', 'error');
+            });
     }
+
     if (!item) return <></>;
     return (
         <div

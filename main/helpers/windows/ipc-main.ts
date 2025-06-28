@@ -184,7 +184,7 @@ export const connectIpcMain = (mainWindow: Electron.BrowserWindow) => {
 
     ipcMain.handle('open-shortcut-app', async (e, { path: shortcutPath }) => {
         try {
-            if (fs.existsSync(shortcutPath)) execFile(shortcutPath);
+            if ((shortcutPath as string).includes('.exe')) execFile(shortcutPath);
             else {
                 shell.openPath(shortcutPath);
             }
