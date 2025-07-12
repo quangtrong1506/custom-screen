@@ -4,8 +4,7 @@ import * as fs from 'fs';
 import { log } from '../dev-log';
 import { sendListVideos, sendWebContents } from '../web-contents';
 import { readJsonFile, writeJsonFile } from '../file';
-import { execFile, execFileSync } from 'child_process';
-
+import { exec, spawn } from 'child_process';
 const initShortcutData = {
     items: [],
     layout: [],
@@ -182,12 +181,16 @@ export const connectIpcMain = (mainWindow: Electron.BrowserWindow) => {
         }
     });
 
-    ipcMain.handle('open-shortcut-app', async (e, { path: shortcutPath }) => {
+    ipcMain.handle('open-shortcut-app', async (_e, { path }: { path: string }) => {
         try {
-            if ((shortcutPath as string).includes('.exe')) execFile(shortcutPath);
-            else {
-                shell.openPath(shortcutPath);
+            if (path.includes('.exe')) {
+                exec(path, (error) => {
+                    if (error) console.error('❌ exec error:', error);
+                });
+            } else {
+                shell.openPath(path); // vẫn dùng cho .lnk, file, folder...
             }
+
             return true;
         } catch (error) {
             log.error('❌ Open app error:', error);

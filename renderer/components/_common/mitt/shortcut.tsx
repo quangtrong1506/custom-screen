@@ -75,9 +75,7 @@ const FormShortcut = ({ defaultValue, onClose }: FormShortcutProps) => {
                         className="w-full border border-black/10 p-2 rounded-md focus-within:outline-none"
                         placeholder="Đường dẫn"
                         value={path}
-                        onChange={(e) =>
-                            setPath((e.target.value || '').replaceAll('\\', '/').replaceAll('"', '').trim())
-                        }
+                        onChange={(e) => setPath((e.target.value || '').trim())}
                     />
                     <div className="w-full flex items-center gap-3">
                         <div className="w-24 h-24">
