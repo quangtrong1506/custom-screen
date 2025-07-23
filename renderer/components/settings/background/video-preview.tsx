@@ -71,6 +71,9 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({ src, name, type }) =
                 onClick={(e) => {
                     setOpen(true);
                     setPosition([e.clientX, e.clientY]);
+                    setTimeout(() => {
+                        videoRef.current.play();
+                    }, 300);
                 }}
                 className="rounded-lg"
                 src={src}
