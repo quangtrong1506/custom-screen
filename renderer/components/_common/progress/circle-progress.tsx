@@ -52,7 +52,7 @@ export function CircleProgress({
             y="50%"
             dominantBaseline="middle"
             textAnchor="middle"
-            fontSize={size * 0.4}
+            fontSize={size * 0.2}
             fill="#333"
             fontWeight="bold"
          >

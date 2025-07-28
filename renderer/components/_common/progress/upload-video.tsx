@@ -47,64 +47,49 @@ export function UploadImages() {
       }
    }, [works]);
 
-   function startUpload(id: string, data: WorkInterface['data']) {
+   useEffect(() => {
+      const handleProgress = ({ id, progress }: { id: string; progress: number }) => {
+         setWorks((prev) =>
+            prev.map((it) =>
+               it.id === id
+                  ? {
+                       ...it,
+                       progress,
+                       status: progress === 100 ? 'success' : 'uploading',
+                    }
+                  : it
+            )
+         );
+         sendIPC('get-videos', null);
+
+         // Xóa sau 3s nếu xong hết
+         if (progress === 100) {
+            setTimeout(() => {
+               setWorks((prev) => prev.filter((it) => it.id !== id));
+            }, 3000);
+         }
+      };
+      window.ipc.on('upload-video-progress', handleProgress);
+      return () => eventBus.off('upload-video-progress', handleProgress);
+   }, []);
+
+   async function startUpload(id: string, data: WorkInterface['data']) {
       setWorks((prev) => prev.map((it) => (it.id === id ? { ...it, status: 'uploading', progress: 0 } : it)));
 
       const arrr = Array.from(data);
-      const list: Buffer<ArrayBuffer>[] = [];
-      arrr.forEach((it) => {
-         const buffer = Buffer.from(it);
-         list.push(buffer);
-      });
+      const list = await Promise.all(
+         arrr.map(async (it) => {
+            const arrayBuffer = await it.arrayBuffer();
+            return {
+               title: it.name,
+               buffer: Buffer.from(arrayBuffer),
+            };
+         })
+      );
       sendIPC('upload-video', {
          id,
-         list: data,
+         list,
       });
-
-      // saveImages({
-      //    images: data.map((it) => ({
-      //       file: it.file!,
-      //       name: it.description || 'Image-Anime-' + new Date().getTime(),
-      //    })),
-      //    onProcess: (current, total, currentData) => {
-      //       fetch('/api/images', {
-      //          method: 'POST',
-      //          body: JSON.stringify({
-      //             location: currentData?.display_url,
-      //             description: data[current - 1]?.description,
-      //             category: data[current - 1]?.category,
-      //             albums: data[current - 1]?.albums,
-      //          }),
-      //       })
-      //          .then((res) => res.json())
-      //          .then((res) => {
-      //             if (res.status === 200) {
-      //                setWorks((prev) =>
-      //                   prev.map((it) =>
-      //                      it.id === id
-      //                         ? {
-      //                              ...it,
-      //                              progress: (current / total) * 100,
-      //                              status: current === total ? 'success' : 'uploading',
-      //                           }
-      //                         : it
-      //                   )
-      //                );
-
-      //                // Xóa sau 3s nếu xong hết
-      //                if (current === total) {
-      //                   setTimeout(() => {
-      //                      setWorks((prev) => prev.filter((it) => it.id !== id));
-      //                   }, 3000);
-      //                }
-      //             }
-      //          })
-      //          .catch((err) => {
-      //             console.error(err);
-      //             setWorks((prev) => prev.map((it) => (it.id === id ? { ...it, status: 'error', progress: 0 } : it)));
-      //          });
-      //    },
-      // });
    }
 
    function hideWork(id: string) {

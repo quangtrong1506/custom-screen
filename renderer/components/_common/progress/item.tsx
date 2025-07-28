@@ -21,7 +21,7 @@ export function UploadWorkItem({ item, onHide }: UploadWorkItemProps) {
                <CircleProgress percentage={item.progress} size={40} strokeWidth={5} />
             </div>
             <div className="flex flex-col gap-2">
-               <div className="text-3xl leading-4 text-cyan-600">
+               <div className="text-lg leading-4 text-cyan-600">
                   {item.status === 'pending' && 'Đang chờ công việc trước'}
                   {item.status === 'success' && 'Tải ảnh thành công'}
                   {item.status === 'uploading' && 'Đang tải ảnh...'}
@@ -31,7 +31,7 @@ export function UploadWorkItem({ item, onHide }: UploadWorkItemProps) {
             </div>
          </div>
          <div className="flex flex-col items-center justify-center">
-            <div className="cursor-pointer text-cyan-600 hover:underline">Chi tiết</div>
+            {/* <div className="cursor-pointer text-cyan-600 hover:underline">Chi tiết</div> */}
             <div className="cursor-pointer text-red-600 hover:underline" onClick={onHide}>
                Ẩn
             </div>
