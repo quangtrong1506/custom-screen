@@ -60,12 +60,15 @@ jobs:
          - name: Install dependencies
            run: npm ci
 
+         - name: Init CHANGELOG.md if not exists
+           run: |
+              if [ ! -f CHANGELOG.md ]; then echo "# Changelog" > CHANGELOG.md; fi
+
          - name: Update CHANGELOG.md
            run: |
-              npx conventional-changelog -p angular -i CHANGELOG.md -s || true
-              git add CHANGELOG.md || true
-              git diff --cached --quiet || (git commit -m "docs: update CHANGELOG.md" && git push origin HEAD)
-
+              npx conventional-changelog-cli -p angular -i CHANGELOG.md -s || true
+              git add CHANGELOG.md
+              git diff --cached --quiet || echo "No changelog updates"
          - name: Bump version and push tag
            run: |
               npm version patch --no-git-tag-version
