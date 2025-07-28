@@ -11,8 +11,14 @@ interface SelectImageProps {
 }
 
 export const SelectImage = ({ open, onClose, onSelect }: SelectImageProps) => {
-	const [cats, setCats] = useState([]);
-	const [images, setImages] = useState([]);
+	const [cats, setCats] = useState<{ _id: string; name: string }[]>([]);
+	const [images, setImages] = useState<
+		{
+			_id: string;
+			location: string;
+			category: string;
+		}[]
+	>([]);
 	const [imageloading, setImageLoading] = useState(false);
 	const [catLoading, setCatLoading] = useState(true);
 	const [filter, setFilter] = useState({

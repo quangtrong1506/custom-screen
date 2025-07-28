@@ -15,7 +15,7 @@ const SettingShortcutPage = () => {
 		scale: number;
 		items: ShortcutInterface[];
 		show: boolean;
-		layout: unknown;
+		layout: Layout[];
 	}>({ scale: 1, items: [], show: true, layout: [] });
 
 	useEffect(() => {

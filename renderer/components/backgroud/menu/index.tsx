@@ -25,7 +25,7 @@ export function RightMenu({ open, onClose, position }: RightMenuProps) {
 	useClickAway(rootRef, () => onClose?.());
 	const handleCreateShortcut = () => {
 		onClose?.();
-		eventBus.emit('create-shortcut', null);
+		eventBus.emit('create-shortcut', {});
 	};
 
 	useEffect(() => {

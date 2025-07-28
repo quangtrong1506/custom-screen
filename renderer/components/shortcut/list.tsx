@@ -64,7 +64,11 @@ export function ListShortcut() {
 			}
 		};
 
-		const hadleEmitFormShortcut = (data: ShortcutInterface) => {
+		const hadleEmitFormShortcut = ({ data }: { data?: ShortcutInterface }) => {
+			if (!data) {
+				showToast('Không có dữ liệu', 'error');
+				return;
+			}
 			setShortcutConfig(prev => {
 				const items = [...prev.items];
 				const layouts = [...prev.layout];

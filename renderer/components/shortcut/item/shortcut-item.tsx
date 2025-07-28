@@ -9,7 +9,7 @@ import { ShortcutInterface } from './type';
 
 export interface ShortcutItemProps {
 	className?: string;
-	item: ShortcutInterface;
+	item?: ShortcutInterface;
 	onClick?: (id?: string) => void;
 	onDelete?: (id?: string) => void;
 }
@@ -41,7 +41,7 @@ export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
 	const [open, setOpen] = useState<boolean>(false);
 
 	const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
-	const wrapperRef = useRef<HTMLDivElement>(null);
+	const wrapperRef = useRef<HTMLDivElement>();
 	const isDraggingRef = useRef<boolean>(false);
 
 	function cancelHold() {
@@ -90,6 +90,7 @@ export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
 	return (
 		<div
 			ref={node => {
+				if (!node) return;
 				ref(node);
 				wrapperRef.current = node;
 			}}

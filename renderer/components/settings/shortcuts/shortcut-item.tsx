@@ -1,5 +1,5 @@
-import { ImageContainer } from '../../image-container';
 import { ThreeDotMenu } from '../../_common';
+import { ImageContainer } from '../../image-container';
 import { ShortcutInterface } from '../../shortcut/item/type';
 
 interface SettingShortcutItemProps {
@@ -30,7 +30,7 @@ export const SettingShortcutItem = ({ item, onDelete }: SettingShortcutItemProps
 							id: 'delete-shortcut',
 							title: 'Xoá shortcut',
 							onClick: () => {
-								onDelete(item.id);
+								onDelete?.(item.id);
 							}
 						}
 					]}

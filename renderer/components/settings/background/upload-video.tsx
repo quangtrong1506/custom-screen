@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { FaUpload } from 'react-icons/fa6';
-import { ZoomPopup } from '../../_common';
 import Swal from 'sweetalert2';
 import { eventBus } from '../../../libs';
+import { ZoomPopup } from '../../_common';
 
 export function UploadVideo() {
 	const [open, setOpen] = useState<boolean>(false);
@@ -18,7 +18,7 @@ export function UploadVideo() {
 	async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>): Promise<void> {
 		const files = event.target.files;
 		setOpen(false);
-		sendEvent(files);
+		sendEvent(files || undefined);
 	}
 	async function sendEvent(files?: FileList) {
 		if (!files) return;

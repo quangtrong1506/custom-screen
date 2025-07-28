@@ -1,21 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { eventBus } from '../../../libs';
-import { createPortal } from 'react-dom';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
+import Swal from 'sweetalert2';
 import { sendIpcInvike } from '../../../hooks';
+import { eventBus } from '../../../libs';
 import { ShortcutInterface } from '../../shortcut/item/type';
 import { SelectImage } from './select-image';
-import Swal from 'sweetalert2';
 
 export function EmitShortcut() {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
-	const [data, setData] = useState<ShortcutInterface | null>(null);
+	const [data, setData] = useState<ShortcutInterface>();
 	useEffect(() => {
-		function handleUploaded(data?: ShortcutInterface) {
+		function handleUploaded({ data: paramData }: { data?: ShortcutInterface }) {
 			setIsOpen(true);
-			setData(data || null);
+			setData(paramData);
 		}
 
 		eventBus.on('create-shortcut', handleUploaded);
@@ -46,7 +46,7 @@ const FormShortcut = ({ defaultValue, onClose }: FormShortcutProps) => {
 			});
 			return;
 		}
-		let newIcon = icon;
+		let newIcon = typeof icon === 'string' ? icon : '';
 		if (icon && typeof icon !== 'string') {
 			const arrayBuffer = await icon.arrayBuffer();
 			let buffer = Buffer.from(arrayBuffer);
@@ -61,11 +61,13 @@ const FormShortcut = ({ defaultValue, onClose }: FormShortcutProps) => {
 
 		onClose?.();
 		eventBus.emit('on-create-shortcut', {
-			...defaultValue,
-			id: defaultValue?.id || Math.random().toString().slice(2),
-			title,
-			path,
-			icon: newIcon || '/images/logo.png'
+			data: {
+				...defaultValue,
+				id: defaultValue?.id || Math.random().toString().slice(2),
+				title,
+				path,
+				icon: newIcon || '/images/logo.png'
+			}
 		});
 	};
 	return createPortal(
@@ -122,7 +124,7 @@ const FormShortcut = ({ defaultValue, onClose }: FormShortcutProps) => {
 							id="xxx-select-image"
 							type="file"
 							accept=".png,.jpg,.jpeg"
-							onChange={e => setIcon(e.target.files?.[0])}
+							onChange={e => setIcon(e.target.files?.[0] || '')}
 						/>
 					</div>
 					<div className="flex gap-3">
