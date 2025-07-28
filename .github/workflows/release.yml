@@ -1,166 +1,60 @@
-name: Build Electron App
+name: Build and Release
 
 on:
    push:
-      branches:
-         - '**'
-
-permissions:
-   contents: write
+      branches: [main]
 
 jobs:
-   lint-check:
-      runs-on: ubuntu-latest
-      steps:
-         - uses: actions/checkout@v3
+   build-and-release:
+      runs-on: windows-latest
 
-         - uses: actions/setup-node@v3
+      steps:
+         - name: Checkout code
+           uses: actions/checkout@v4
            with:
-              node-version: 20
+              fetch-depth: 0
+
+         - name: Setup Node.js
+           uses: actions/setup-node@v4
+           with:
+              node-version: 18
               cache: 'npm'
 
          - name: Install dependencies
            run: npm ci
 
          - name: Run ESLint
-           id: eslint
-           run: |
-              npm run lint > lint-report.txt || true
-              count=$(grep -c 'error' lint-report.txt || true)
-              echo "🔍 ESLint lỗi: $count"
-              echo "error_count=$count" >> $GITHUB_OUTPUT
+           run: npm run lint
 
-         - name: Fail if ESLint errors found
-           if: steps.eslint.outputs.error_count != '0'
-           run: |
-              echo "❌ Dừng lại! Có ${{ steps.eslint.outputs.error_count }} lỗi ESLint. Không tiếp tục build."
-              cat lint-report.txt
-              exit 1
-
-   build-and-release:
-      runs-on: windows-latest
-      needs: lint-check
-      if: github.ref == 'refs/heads/main'
-      env:
-         GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      steps:
-         - uses: actions/checkout@v3
-
-         - name: Set up Git for pushing tags
-           run: |
-              git config user.name "github-actions[bot]"
-              git config user.email "github-actions[bot]@users.noreply.github.com"
-              git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git
-
-         - uses: actions/setup-node@v3
-           with:
-              node-version: 20
-              cache: 'npm'
-
-         - name: Install dependencies
-           run: npm ci
-
-         - name: Init CHANGELOG.md if not exists
+         - name: Ensure CHANGELOG.md exists
+           shell: bash
            run: |
               if [ ! -f CHANGELOG.md ]; then echo "# Changelog" > CHANGELOG.md; fi
 
          - name: Update CHANGELOG.md
+           shell: bash
            run: |
               npx conventional-changelog-cli -p angular -i CHANGELOG.md -s || true
               git add CHANGELOG.md
-              git diff --cached --quiet || echo "No changelog updates"
+              git diff --cached --quiet || git commit -m "docs: update CHANGELOG.md"
+
          - name: Bump version and push tag
-           run: |
-              npm version patch --no-git-tag-version
-              git commit -am "chore: bump version"
-              git tag v$(node -p "require('./package.json').version")
-              git push origin --follow-tags
-              git fetch --tags --force
-
-         - name: Get latest tag or create one if none exists
-           id: get_version
            shell: bash
            run: |
-              tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-              if [ -z "$tag" ]; then
-                tag="v0.1.0"
-                git config user.name "github-actions"
-                git config user.email "github-actions@users.noreply.github.com"
-                git tag $tag
-                git push origin $tag
-              fi
-              echo "tag=$tag" >> $GITHUB_OUTPUT
+              version=$(npm version patch --no-git-tag-version)
+              git add package.json package-lock.json
+              git commit -m "chore: bump version to $version"
+              git tag $version
+              git push origin HEAD --tags
 
-         - name: Build on Windows (.exe)
+         - name: Build Electron app
            run: npm run build
 
-         - name: Prepare release folder
-           shell: bash
-           run: |
-              mkdir -p release
-              shopt -s nullglob
-              cp dist/*.{exe,yml,yaml,blockmap} release/ 2>/dev/null || echo "No files copied"
-
-         - name: Create GitHub Release
+         - name: Release app
            uses: softprops/action-gh-release@v2
            with:
-              name: Release ${{ steps.get_version.outputs.tag }}
-              tag_name: ${{ steps.get_version.outputs.tag }}
-              files: release/*
-
-   preview:
-      runs-on: windows-latest
-      needs: lint-check
-      if: github.ref != 'refs/heads/main'
-      env:
-         GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      steps:
-         - uses: actions/checkout@v3
-
-         - name: Set up Git
-           run: |
-              git config user.name "github-actions[bot]"
-              git config user.email "github-actions[bot]@users.noreply.github.com"
-              git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git
-
-         - uses: actions/setup-node@v3
-           with:
-              node-version: 20
-              cache: 'npm'
-
-         - name: Install dependencies
-           run: npm ci
-
-         - name: Build on Windows (.exe)
-           run: npm run build
-
-         - name: Prepare preview artifacts
-           shell: bash
-           run: |
-              mkdir -p preview
-              shopt -s nullglob
-              cp dist/*.{exe,yml,yaml,blockmap} preview/ 2>/dev/null || echo "No files copied"
-
-         - name: Create preview tag
-           id: tag
-           shell: bash
-           run: |
-              branch="${GITHUB_REF##*/}"
-              tag="preview-${branch//\//-}"
-              git tag -f $tag
-              git push origin $tag --force
-              echo "tag=$tag" >> $GITHUB_OUTPUT
-
-         - name: Create GitHub Preview Release
-           uses: softprops/action-gh-release@v2
-           with:
-              name: Preview ${{ steps.tag.outputs.tag }}
-              tag_name: ${{ steps.tag.outputs.tag }}
-              files: preview/*
-              prerelease: true
-
-         - name: Remove preview tag
-           shell: bash
-           run: |
-              git tag -d ${{ steps.tag.outputs.tag }}
-              git push origin :${{ steps.tag.outputs.tag }}
+              generate_release_notes: true
+              files: |
+                 dist/*.exe
+           env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
