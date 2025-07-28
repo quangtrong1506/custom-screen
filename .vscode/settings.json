@@ -1,9 +1,25 @@
 {
-   "eslint.experimental.useFlatConfig": true,
-   "eslint.useFlatConfig": true,
-   "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "always"
-   },
-   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
-   "editor.formatOnSave": true
+	"[javascript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[json]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"editor.codeActionsOnSave": {
+		"source.addMissingImports.ts": "always",
+		//  "source.fixAll.eslint": "always",
+		//  "source.fixAll.ts": "always",
+		"source.organizeImports": "always",
+		"source.removeUnusedImports": "always",
+		"source.sort.json": "always",
+		"source.sortImports": "always"
+	},
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.formatOnSave": true,
+	//   "eslint.experimental.useFlatConfig": true,
+	"eslint.useFlatConfig": true,
+	"eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"]
 }

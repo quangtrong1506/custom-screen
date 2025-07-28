@@ -3,32 +3,32 @@ productName: Live Wallpaper
 copyright: Copyright © 2025 Quangtrong1506
 
 directories:
-    output: dist
-    buildResources: resources
+   output: dist
+   buildResources: resources
 
 files:
-    - from: .
-      filter:
-          - package.json
-          - app
+   - from: .
+     filter:
+        - package.json
+        - app
 extraResources:
-    - from: resources/icon.ico
-      to: icon.ico
+   - from: resources/icon.ico
+     to: icon.ico
 
 win:
-    target:
-        - nsis
-    icon: resources/icon.ico
+   target:
+      - nsis
+   icon: resources/icon.ico
 
 artifactName: 'Live-Wallpaper.${version}.setup.${ext}'
 
 nsis:
-    createDesktopShortcut: true
-    createStartMenuShortcut: true
-    oneClick: true
-    runAfterFinish: true
+   createDesktopShortcut: true
+   createStartMenuShortcut: true
+   oneClick: true
+   runAfterFinish: true
 
 publish:
-    provider: github
-    owner: quangtrong1506
-    repo: custom-screen
+   provider: github
+   owner: quangtrong1506
+   repo: custom-screen

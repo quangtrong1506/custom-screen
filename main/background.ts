@@ -8,76 +8,76 @@ import { log } from './helpers';
 const isProd = process.env.NODE_ENV === 'production';
 
 if (isProd) {
-   serve({ directory: 'app' });
+	serve({ directory: 'app' });
 } else {
-   app.setPath('userData', `D:\\Apps\\${app.name}(development)`);
-   // app.setPath('userData', `${app.getPath('userData')} (development)`);
+	app.setPath('userData', `D:\\Apps\\${app.name}(development)`);
+	// app.setPath('userData', `${app.getPath('userData')} (development)`);
 }
 
 app.setName('Live wallpaper for Windows');
 (async () => {
-   if (!app.requestSingleInstanceLock()) app.quit();
-   else
-      app.on('second-instance', () => {
-         if (mainWindow) {
-            if (mainWindow.isMinimized()) mainWindow.restore();
-            mainWindow.show();
-            mainWindow.focus();
-         }
-      });
-   await app.whenReady();
-   const primaryDisplay = screen.getPrimaryDisplay();
-   const { width, height } = primaryDisplay.workAreaSize;
-   const mainWindow = createWindow('main', {
-      width,
-      height,
-      webPreferences: {
-         preload: path.join(__dirname, 'preload.js'),
-         nodeIntegration: true,
-         webSecurity: false,
-      },
-      maximizable: true,
-      frame: false,
-   });
+	if (!app.requestSingleInstanceLock()) app.quit();
+	else
+		app.on('second-instance', () => {
+			if (mainWindow) {
+				if (mainWindow.isMinimized()) mainWindow.restore();
+				mainWindow.show();
+				mainWindow.focus();
+			}
+		});
+	await app.whenReady();
+	const primaryDisplay = screen.getPrimaryDisplay();
+	const { width, height } = primaryDisplay.workAreaSize;
+	const mainWindow = createWindow('main', {
+		width,
+		height,
+		webPreferences: {
+			preload: path.join(__dirname, 'preload.js'),
+			nodeIntegration: true,
+			webSecurity: false
+		},
+		maximizable: true,
+		frame: false
+	});
 
-   // (mainWindow as any).setAlwaysOnBottom(true);
+	// (mainWindow as any).setAlwaysOnBottom(true);
 
-   mainWindow.setMenu(null);
-   mainWindow.maximize();
-   if (process.platform === 'win32') app.setAppUserModelId(app.name);
+	mainWindow.setMenu(null);
+	mainWindow.maximize();
+	if (process.platform === 'win32') app.setAppUserModelId(app.name);
 
-   if (isProd) {
-      await mainWindow.loadURL('app://./');
-      app.setLoginItemSettings({
-         openAtLogin: true,
-         path: app.getPath('exe'),
-      });
-   } else {
-      const port = process.argv[2];
-      await mainWindow.loadURL(`http://localhost:${port}/`);
-      mainWindow.webContents.openDevTools();
-   }
-   // Event
-   const handleClose = (event?: Electron.Event) => {
-      event?.preventDefault();
-      mainWindow.hide();
-   };
-   mainWindow.addListener('close', handleClose);
-   mainWindow.setSkipTaskbar(true);
-   mainWindow.blur();
+	if (isProd) {
+		await mainWindow.loadURL('app://./');
+		app.setLoginItemSettings({
+			openAtLogin: true,
+			path: app.getPath('exe')
+		});
+	} else {
+		const port = process.argv[2];
+		await mainWindow.loadURL(`http://localhost:${port}/`);
+		mainWindow.webContents.openDevTools();
+	}
+	// Event
+	const handleClose = (event?: Electron.Event) => {
+		event?.preventDefault();
+		mainWindow.hide();
+	};
+	mainWindow.addListener('close', handleClose);
+	mainWindow.setSkipTaskbar(true);
+	mainWindow.blur();
 
-   // Call
-   createTray(mainWindow);
-   setupAutoUpdater(mainWindow, () => {
-      mainWindow.removeListener('close', handleClose);
-   });
-   connectIpcMain(mainWindow);
+	// Call
+	createTray(mainWindow);
+	setupAutoUpdater(mainWindow, () => {
+		mainWindow.removeListener('close', handleClose);
+	});
+	connectIpcMain(mainWindow);
 })();
 
 app.on('window-all-closed', () => {
-   app.quit();
+	app.quit();
 });
 
 process.on('uncaughtException', function (err) {
-   log.error(err, 'error');
+	log.error(err, 'error');
 });

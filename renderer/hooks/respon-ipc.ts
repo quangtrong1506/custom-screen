@@ -1,43 +1,43 @@
 export const IpcKey = {
-   /** Đẩy video vào backend */
-   uploadVideo: 'UPLOAD_VIDEO',
+	/** Đẩy video vào backend */
+	uploadVideo: 'UPLOAD_VIDEO',
 
-   /** Xoá video */
-   deleteVideo: 'DELETE_VIDEO',
+	/** Xoá video */
+	deleteVideo: 'DELETE_VIDEO',
 
-   /** Đẩy thumbnail cho shortcut */
-   uploadShortcutMedia: 'UPLOAD_SHORTCUT_MEDIA',
+	/** Đẩy thumbnail cho shortcut */
+	uploadShortcutMedia: 'UPLOAD_SHORTCUT_MEDIA',
 
-   /** Xoá thumbnail cho shortcut */
-   deleteShortcutMedia: 'DELETE_SHORTCUT_MEDIA',
+	/** Xoá thumbnail cho shortcut */
+	deleteShortcutMedia: 'DELETE_SHORTCUT_MEDIA',
 
-   /** Lấy danh sách video */
-   getVideoList: 'GET_VIDEO_LIST',
+	/** Lấy danh sách video */
+	getVideoList: 'GET_VIDEO_LIST',
 
-   /** Lấy video + type nền */
-   getBackground: 'GET_BACKGROUND',
+	/** Lấy video + type nền */
+	getBackground: 'GET_BACKGROUND',
 
-   /** Cài nền */
-   setBackground: 'SET_BACKGROUND',
+	/** Cài nền */
+	setBackground: 'SET_BACKGROUND',
 
-   /** Lấy danh sách shortcut */
-   getShortcuts: 'GET_SHORTCUTS',
+	/** Lấy danh sách shortcut */
+	getShortcuts: 'GET_SHORTCUTS',
 
-   /** set zoom cho shortcut */
-   setScaleBackground: 'SET_SCALE_BACKGROUND',
+	/** set zoom cho shortcut */
+	setScaleBackground: 'SET_SCALE_BACKGROUND',
 
-   /** Lưu các shortcut */
-   saveShortcuts: 'SAVE_SHORTCUTS',
+	/** Lưu các shortcut */
+	saveShortcuts: 'SAVE_SHORTCUTS',
 
-   /** Mở ứng dụng shortcut */
-   openShortcutApp: 'OPEN_SHORTCUT_APP',
+	/** Mở ứng dụng shortcut */
+	openShortcutApp: 'OPEN_SHORTCUT_APP',
 
-   /** Đóng ứng dụng xuống tray */
-   closeMainWindow: 'CLOSE_MAIN_WINDOW',
+	/** Đóng ứng dụng xuống tray */
+	closeMainWindow: 'CLOSE_MAIN_WINDOW',
 
-   /** Lấy thông tin ứng dụng */
-   getAppInfo: 'GET_APP_INFO',
+	/** Lấy thông tin ứng dụng */
+	getAppInfo: 'GET_APP_INFO',
 
-   /** Kiểm tra cập nhật */
-   checkForUpdate: 'CHECK_FOR_UPDATE',
+	/** Kiểm tra cập nhật */
+	checkForUpdate: 'CHECK_FOR_UPDATE'
 };

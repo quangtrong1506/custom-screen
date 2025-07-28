@@ -3,269 +3,271 @@
 @tailwind utilities;
 
 @font-face {
-    font-family: 'be_vietnam_pro';
-    src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-Black.ttf') format('truetype');
-    font-weight: 900;
-    font-style: normal;
+	font-family: 'be_vietnam_pro';
+	src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-Black.ttf') format('truetype');
+	font-weight: 900;
+	font-style: normal;
 }
 
 @font-face {
-    font-family: 'be_vietnam_pro';
-    src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-BlackItalic.ttf') format('truetype');
-    font-weight: 900;
-    font-style: italic;
+	font-family: 'be_vietnam_pro';
+	src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-BlackItalic.ttf') format('truetype');
+	font-weight: 900;
+	font-style: italic;
 }
 
 @font-face {
-    font-family: 'be_vietnam_pro';
-    src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-Bold.ttf') format('truetype');
-    font-weight: 700;
-    font-style: normal;
+	font-family: 'be_vietnam_pro';
+	src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-Bold.ttf') format('truetype');
+	font-weight: 700;
+	font-style: normal;
 }
 
 @font-face {
-    font-family: 'be_vietnam_pro';
-    src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-BoldItalic.ttf') format('truetype');
-    font-weight: 700;
-    font-style: italic;
+	font-family: 'be_vietnam_pro';
+	src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-BoldItalic.ttf') format('truetype');
+	font-weight: 700;
+	font-style: italic;
 }
 
 @font-face {
-    font-family: 'be_vietnam_pro';
-    src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-ExtraBold.ttf') format('truetype');
-    font-weight: 800;
-    font-style: normal;
+	font-family: 'be_vietnam_pro';
+	src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-ExtraBold.ttf') format('truetype');
+	font-weight: 800;
+	font-style: normal;
 }
 
 @font-face {
-    font-family: 'be_vietnam_pro';
-    src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-ExtraBoldItalic.ttf') format('truetype');
-    font-weight: 800;
-    font-style: italic;
+	font-family: 'be_vietnam_pro';
+	src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-ExtraBoldItalic.ttf') format('truetype');
+	font-weight: 800;
+	font-style: italic;
 }
 
 @font-face {
-    font-family: 'be_vietnam_pro';
-    src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-ExtraLight.ttf') format('truetype');
-    font-weight: 200;
-    font-style: normal;
+	font-family: 'be_vietnam_pro';
+	src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-ExtraLight.ttf') format('truetype');
+	font-weight: 200;
+	font-style: normal;
 }
 
 @font-face {
-    font-family: 'be_vietnam_pro';
-    src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-ExtraLightItalic.ttf') format('truetype');
-    font-weight: 200;
-    font-style: italic;
+	font-family: 'be_vietnam_pro';
+	src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-ExtraLightItalic.ttf') format('truetype');
+	font-weight: 200;
+	font-style: italic;
 }
 
 @font-face {
-    font-family: 'be_vietnam_pro';
-    src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-Italic.ttf') format('truetype');
-    font-weight: 400;
-    font-style: italic;
+	font-family: 'be_vietnam_pro';
+	src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-Italic.ttf') format('truetype');
+	font-weight: 400;
+	font-style: italic;
 }
 
 @font-face {
-    font-family: 'be_vietnam_pro';
-    src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-Light.ttf') format('truetype');
-    font-weight: 300;
-    font-style: normal;
+	font-family: 'be_vietnam_pro';
+	src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-Light.ttf') format('truetype');
+	font-weight: 300;
+	font-style: normal;
 }
 
 @font-face {
-    font-family: 'be_vietnam_pro';
-    src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-LightItalic.ttf') format('truetype');
-    font-weight: 300;
-    font-style: italic;
+	font-family: 'be_vietnam_pro';
+	src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-LightItalic.ttf') format('truetype');
+	font-weight: 300;
+	font-style: italic;
 }
 
 @font-face {
-    font-family: 'be_vietnam_pro';
-    src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-Medium.ttf') format('truetype');
-    font-weight: 500;
-    font-style: normal;
+	font-family: 'be_vietnam_pro';
+	src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-Medium.ttf') format('truetype');
+	font-weight: 500;
+	font-style: normal;
 }
 
 @font-face {
-    font-family: 'be_vietnam_pro';
-    src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-MediumItalic.ttf') format('truetype');
-    font-weight: 500;
-    font-style: italic;
+	font-family: 'be_vietnam_pro';
+	src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-MediumItalic.ttf') format('truetype');
+	font-weight: 500;
+	font-style: italic;
 }
 
 @font-face {
-    font-family: 'be_vietnam_pro';
-    src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-Regular.ttf') format('truetype');
-    font-weight: 400;
-    font-style: normal;
+	font-family: 'be_vietnam_pro';
+	src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-Regular.ttf') format('truetype');
+	font-weight: 400;
+	font-style: normal;
 }
 
 @font-face {
-    font-family: 'be_vietnam_pro';
-    src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-SemiBold.ttf') format('truetype');
-    font-weight: 600;
-    font-style: normal;
+	font-family: 'be_vietnam_pro';
+	src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-SemiBold.ttf') format('truetype');
+	font-weight: 600;
+	font-style: normal;
 }
 
 @font-face {
-    font-family: 'be_vietnam_pro';
-    src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-SemiBoldItalic.ttf') format('truetype');
-    font-weight: 600;
-    font-style: italic;
+	font-family: 'be_vietnam_pro';
+	src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-SemiBoldItalic.ttf') format('truetype');
+	font-weight: 600;
+	font-style: italic;
 }
 
 @font-face {
-    font-family: 'be_vietnam_pro';
-    src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-Thin.ttf') format('truetype');
-    font-weight: 100;
-    font-style: normal;
+	font-family: 'be_vietnam_pro';
+	src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-Thin.ttf') format('truetype');
+	font-weight: 100;
+	font-style: normal;
 }
 
 @font-face {
-    font-family: 'be_vietnam_pro';
-    src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-ThinItalic.ttf') format('truetype');
-    font-weight: 100;
-    font-style: italic;
+	font-family: 'be_vietnam_pro';
+	src: url('/fonts/Be_Vietnam_Pro/BeVietnamPro-ThinItalic.ttf') format('truetype');
+	font-weight: 100;
+	font-style: italic;
 }
 
 @layer base {
-    html {
-        font-family: 'be_vietnam_pro', sans-serif;
-    }
+	html {
+		font-family: 'be_vietnam_pro', sans-serif;
+	}
 }
 
 @layer components {
 }
 .react-grid-placeholder {
-    background: rgba(255, 255, 255, 0.3) !important; /* Màu nền custom */
-    border: 2px dashed #fff;
-    border-radius: 8px;
-    transition: all 0.2s ease-in-out;
+	background: rgba(255, 255, 255, 0.3) !important; /* Màu nền custom */
+	border: 2px dashed #fff;
+	border-radius: 8px;
+	transition: all 0.2s ease-in-out;
 }
 /*wather*/
 .weather-widget::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
-    animation: shimmer 15s infinite linear;
-    pointer-events: none;
-    z-index: 1;
+	content: '';
+	position: absolute;
+	top: -50%;
+	left: -50%;
+	width: 200%;
+	height: 200%;
+	background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
+	animation: shimmer 15s infinite linear;
+	pointer-events: none;
+	z-index: 1;
 }
 
 @keyframes shimmer {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
 }
 
 .weather-icon-main {
-    filter: drop-shadow(0 0 12px rgba(220, 220, 255, 0.5));
-    animation: floating 3.5s ease-in-out infinite;
+	filter: drop-shadow(0 0 12px rgba(220, 220, 255, 0.5));
+	animation: floating 3.5s ease-in-out infinite;
 }
 
 @keyframes floating {
-    0% {
-        transform: translateY(0px);
-    }
-    50% {
-        transform: translateY(-8px);
-    }
-    100% {
-        transform: translateY(0px);
-    }
+	0% {
+		transform: translateY(0px);
+	}
+	50% {
+		transform: translateY(-8px);
+	}
+	100% {
+		transform: translateY(0px);
+	}
 }
 
 #cloud-container {
-    pointer-events: auto;
+	pointer-events: auto;
 }
 
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(15px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+	from {
+		opacity: 0;
+		transform: translateY(15px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 .animate-fadeInUp {
-    opacity: 0;
-    animation: fadeInUp 0.6s ease-out forwards;
+	opacity: 0;
+	animation: fadeInUp 0.6s ease-out forwards;
 }
 
 @keyframes fadeInScaleUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+	from {
+		opacity: 0;
+		transform: translateY(10px) scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
 }
 .animate-fadeInScaleUp {
-    opacity: 0;
-    animation: fadeInScaleUp 0.7s ease-out forwards;
+	opacity: 0;
+	animation: fadeInScaleUp 0.7s ease-out forwards;
 }
 
 @keyframes gentleBob {
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-4px);
-    }
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-4px);
+	}
 }
 .animate-gentleBob {
-    animation: gentleBob 2.5s ease-in-out infinite;
+	animation: gentleBob 2.5s ease-in-out infinite;
 }
 
 .sun-info .sunrise:hover .sun-icon,
 .sun-info .sunset:hover .sun-icon {
-    transform: rotate(15deg) scale(1.15);
+	transform: rotate(15deg) scale(1.15);
 }
 .sun-icon {
-    transition: transform 0.3s ease-in-out;
+	transition: transform 0.3s ease-in-out;
 }
 
 .forecast-day:hover {
-    box-shadow: 0 0 25px rgba(255, 255, 255, 0.1), 0 4px 10px rgba(0, 0, 0, 0.2);
+	box-shadow:
+		0 0 25px rgba(255, 255, 255, 0.1),
+		0 4px 10px rgba(0, 0, 0, 0.2);
 }
 .forecast-day:hover .forecast-icon {
-    transform: scale(1.2) translateY(-2px);
-    transition: transform 0.3s ease-out;
+	transform: scale(1.2) translateY(-2px);
+	transition: transform 0.3s ease-out;
 }
 .forecast-day .forecast-icon {
-    transition: transform 0.3s ease-out;
+	transition: transform 0.3s ease-out;
 }
 
 .delay-100 {
-    animation-delay: 0.1s !important;
+	animation-delay: 0.1s !important;
 }
 .delay-200 {
-    animation-delay: 0.2s !important;
+	animation-delay: 0.2s !important;
 }
 .delay-300 {
-    animation-delay: 0.3s !important;
+	animation-delay: 0.3s !important;
 }
 .delay-400 {
-    animation-delay: 0.4s !important;
+	animation-delay: 0.4s !important;
 }
 .delay-500 {
-    animation-delay: 0.5s !important;
+	animation-delay: 0.5s !important;
 }
 .delay-600 {
-    animation-delay: 0.6s !important;
+	animation-delay: 0.6s !important;
 }
 .delay-700 {
-    animation-delay: 0.7s !important;
+	animation-delay: 0.7s !important;
 }
