@@ -4,7 +4,7 @@ import { sendIPC, useIPCKey } from '../../hooks';
 import { eventBus } from '../../libs';
 
 export function Video() {
-   const ipc = useIPCKey<string>('get-background');
+   const ipc = useIPCKey<string>('get-background') || '';
    const videoRef = useRef<HTMLVideoElement>(null);
 
    useEffect(() => {
@@ -29,7 +29,7 @@ export function Video() {
    }, [ipc]);
 
    return (
-      <div className="w-screen h-screen flex items-center justify-center">
+      <div className="w-full h-full flex items-center justify-center">
          <video id="bg-main" className="h-full w-full object-cover" autoPlay loop muted ref={videoRef}>
             <source src={ipc} type="video/mp4" />
          </video>
