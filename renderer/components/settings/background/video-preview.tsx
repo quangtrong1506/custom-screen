@@ -18,7 +18,7 @@ interface VideoPreviewProps {
 
 /** Video preview để set nền */
 
-export const VideoPreview: React.FC<VideoPreviewProps> = ({ id, isDefault, location, name }) => {
+export const VideoPreview: React.FC<VideoPreviewProps> = ({ id, isDefault, location }) => {
 	const router = useRouter();
 	const [open, setOpen] = useState<boolean>(false);
 	const [position, setPosition] = useState<[number, number]>([0, 0]);
@@ -83,7 +83,7 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({ id, isDefault, locat
 
 	return (
 		<>
-			<div className="aspect-video flex items-center justify-center bg-black relative cursor-pointer overflow-hidden rounded-lg">
+			<div className="relative flex aspect-video cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-black">
 				<video
 					onClick={e => {
 						setOpen(true);
@@ -92,7 +92,7 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({ id, isDefault, locat
 							videoRef.current?.play();
 						}, 300);
 					}}
-					className="object-contain w-full h-full"
+					className="h-full w-full object-contain"
 					src={location}
 				></video>
 			</div>

@@ -53,7 +53,9 @@ export interface IPCResponseInterface {
 	deleteVideo: boolean | string;
 
 	/** Đẩy thumbnail cho shortcut */
-	uploadShortcutMedia: boolean | string;
+	uploadShortcutMedia: {
+		location: string;
+	};
 
 	/** Xoá thumbnail cho shortcut */
 	deleteShortcutMedia: boolean | string;
@@ -134,6 +136,7 @@ export interface IpcBodyInterface {
 	uploadShortcutMedia: {
 		id: string;
 		media: {
+			name?: string;
 			path?: string;
 			buffer?: Buffer<ArrayBuffer>;
 		};
@@ -141,7 +144,7 @@ export interface IpcBodyInterface {
 
 	/** Xoá thumbnail cho shortcut */
 	deleteShortcutMedia: {
-		id: string;
+		location: string;
 	};
 
 	/** Lấy danh sách video */
@@ -158,10 +161,20 @@ export interface IpcBodyInterface {
 	getShortcuts: null;
 
 	/** set zoom cho shortcut */
-	setScaleBackground: number;
+	setScaleBackground: {
+		scale: number;
+	};
 
 	/** Lưu các shortcut */
-	saveShortcuts: 'SAVE_SHORTCUTS';
+	saveShortcuts: {
+		screen?: number;
+		layout?: Layout[];
+		items?: ShortcutInterface[];
+		scale?: number;
+		cols?: number;
+		rows?: number;
+		show?: boolean;
+	};
 
 	/** Mở ứng dụng shortcut */
 	openShortcutApp: {

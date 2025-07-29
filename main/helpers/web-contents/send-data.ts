@@ -16,13 +16,6 @@ const stringToSlug = (str: string): string => {
 };
 
 export const sendListVideos = async (mainWindow: BrowserWindow) => {
-	sendWebContents(mainWindow, 'getVideoList', {
-		list: CACHE.videos,
-		total: CACHE.videos.length
-	});
-};
-
-export async function updateVideoCache() {
 	const listVideos = await getListVideos();
 	const data = ['7499566401694908.mp4', ...listVideos].map((it, index) => ({
 		id: stringToSlug(it),
@@ -33,5 +26,10 @@ export async function updateVideoCache() {
 				: path.join(app.getPath('userData'), 'media', 'videos', it).replaceAll('\\', '/'),
 		isDefault: index === 0
 	})) as IPCResponseInterface['getVideoList']['list'];
+
 	CACHE.videos = data;
-}
+	sendWebContents(mainWindow, 'getVideoList', {
+		list: data,
+		total: listVideos.length
+	});
+};

@@ -3,8 +3,6 @@ export interface SettingInterface {
 		type: 'auto' | 'cover' | 'contain';
 		video: {
 			location: string;
-			thumbnail?: string;
-			isDefault?: boolean;
 		};
 	};
 	shortcuts: {

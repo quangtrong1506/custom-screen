@@ -4,11 +4,11 @@ import { exec } from 'child_process';
 import { app, shell } from 'electron';
 import fs from 'fs';
 import path from 'path';
-import { IpcBodyInterface, IpcKey, IPCResponseInterface, SettingInterface, VideoInterface } from '../../../types';
+import { IpcBodyInterface, IPCResponseInterface, SettingInterface, VideoInterface } from '../../../types';
 import CACHE from '../../cache';
 import { log } from '../../dev-log';
 import { readJsonFile, writeJsonFile } from '../../file';
-import { sendListVideos, sendWebContents, updateVideoCache } from '../../web-contents';
+import { sendListVideos, sendWebContents } from '../../web-contents';
 
 function delay(ms: number): Promise<void> {
 	return new Promise(resolve => setTimeout(resolve, ms));
@@ -37,7 +37,6 @@ export function handleUploadVideo(mainWindow: Electron.BrowserWindow) {
 			});
 			await delay(500);
 		}
-		await updateVideoCache();
 		sendListVideos(mainWindow);
 		return true;
 	};
@@ -50,45 +49,47 @@ export function handleDeleteVideo(mainWindow: Electron.BrowserWindow) {
 	): Promise<IPCResponseInterface['deleteVideo']> => {
 		const videoDeleted = CACHE.videos.find(video => video.id === id);
 		const deletePath = path.join(app.getPath('userData'), 'media', 'videos', videoDeleted?.name || '');
-		console.log('video:', videoDeleted);
-		console.log('s-settings:', CACHE.settings.background);
+
+		const settingsPath = path.join(app.getPath('userData'), 'config', 's.bak');
+		const data = (await readJsonFile<SettingInterface>(settingsPath)) || CACHE.settings;
 
 		try {
-			await fs.promises.unlink(deletePath);
-			log.info('Đã xóa file:', deletePath);
-			await updateVideoCache();
-			sendListVideos(mainWindow);
-			return true;
-		} catch (error: any) {
-			const shouldRetry = ['EBUSY', 'EPERM', 'EACCES'].includes(error.code);
-			if (shouldRetry) {
-				log.warn(`File đang bị khoá, thử lại sau 2 giây: ${deletePath}`);
-				await delay(2000);
-				try {
-					await fs.promises.unlink(deletePath);
-					log.info('Xoá lại thành công:', deletePath);
-					await updateVideoCache();
-					sendListVideos(mainWindow);
-					return true;
-				} catch (retryError) {
-					log.error('Xoá lần 2 vẫn lỗi:', retryError);
-					throw retryError;
-				}
+			log.info('Xoá file', deletePath, data.background.video.location);
+			if (deletePath.replaceAll('\\', '/') === data.background.video.location) {
+				log.info('Trùng video nền, Reset nền về mặc định');
+				sendWebContents(mainWindow, 'getBackground', CACHE.settings.background.video.location);
+				await writeJsonFile(settingsPath, {
+					...data,
+					background: {
+						...data.background,
+						video: { ...data.background.video, location: CACHE.settings.background.video.location }
+					}
+				});
+				await delay(500);
 			}
+			await fs.promises.unlink(deletePath);
+			return true;
+		} catch (error: unknown) {
 			log.error('Lỗi xoá video:', error);
 			throw error;
+		} finally {
+			sendListVideos(mainWindow);
 		}
 	};
 }
 
 export async function handleUploadMedia(
-	_event: any,
-	{ fileName, buffer }: { fileName: string; buffer: ArrayBuffer }
+	_event: unknown,
+	{ id, media }: IpcBodyInterface['uploadShortcutMedia']
 ): Promise<IPCResponseInterface['uploadShortcutMedia']> {
 	try {
-		const savePath = path.join(app.getPath('userData'), 'media', 'shortcuts', fileName);
+		if (!media || !media.buffer) {
+			log.warn('Không có media để upload');
+			return false;
+		}
+		const savePath = path.join(app.getPath('userData'), 'media', 'shortcuts', id + '.png');
 		fs.mkdirSync(path.dirname(savePath), { recursive: true });
-		await fs.promises.writeFile(savePath, Buffer.from(buffer));
+		await fs.promises.writeFile(savePath, Buffer.from(media?.buffer));
 		return savePath.replaceAll('\\', '/');
 	} catch (error) {
 		log.error('Lỗi upload media:', error);
@@ -97,12 +98,12 @@ export async function handleUploadMedia(
 }
 
 export async function handleDeleteMedia(
-	_event: any,
-	{ path: filePath }: { path: string }
+	_event: unknown,
+	{ location }: IpcBodyInterface['deleteShortcutMedia']
 ): Promise<IPCResponseInterface['deleteShortcutMedia']> {
 	try {
-		if (!fs.existsSync(filePath)) return false;
-		await fs.promises.unlink(filePath);
+		if (!fs.existsSync(location)) return false;
+		await fs.promises.unlink(location);
 		return true;
 	} catch (error) {
 		log.error('Lỗi xoá media:', error);
@@ -117,7 +118,9 @@ export function handleGetVideoList(mainWindow: Electron.BrowserWindow) {
 export function handleGetBackground(mainWindow: Electron.BrowserWindow) {
 	return async () => {
 		try {
-			sendWebContents(mainWindow, IpcKey.getBackground, CACHE.settings.background);
+			const settingsPath = path.join(app.getPath('userData'), 'config', 's.bak');
+			const data = (await readJsonFile<SettingInterface>(settingsPath)) || CACHE.settings;
+			sendWebContents(mainWindow, 'getBackground', data.background);
 		} catch (error) {
 			log.error(error);
 		}
@@ -126,18 +129,18 @@ export function handleGetBackground(mainWindow: Electron.BrowserWindow) {
 
 export function handleSetBackground(mainWindow: Electron.BrowserWindow) {
 	return async (_event: unknown, { id }: IpcBodyInterface['setBackgroundVideo']) => {
+		const backgroundPath = CACHE.videos.find(video => video.id === id)?.location || '';
+
 		const settingsPath = path.join(app.getPath('userData'), 'config', 's.bak');
 		const data = (await readJsonFile<SettingInterface>(settingsPath)) || CACHE.settings;
-		const backgroundPath = CACHE.videos.find(video => video.id === id)?.location || '';
 		data.background = {
 			...data.background,
 			video: {
 				location: backgroundPath
 			}
 		};
-		CACHE.settings.background.video.location = backgroundPath;
 		await writeJsonFile(settingsPath, data);
-		sendWebContents(mainWindow, IpcKey.getBackground, backgroundPath);
+		sendWebContents(mainWindow, 'getBackground', data.background);
 		return { success: true };
 	};
 }
@@ -149,7 +152,7 @@ export async function handleGetShortcuts() {
 }
 
 export function handleSetScaleBackground() {
-	return async (_event: any, { scale }: { scale: number }) => {
+	return async (_event: unknown, { scale }: { scale: number }) => {
 		const settingsPath = path.join(app.getPath('userData'), 'config', 's.bak');
 		const data = (await readJsonFile<SettingInterface>(settingsPath)) || CACHE.settings;
 		data.shortcuts = { ...data.shortcuts, scale };
@@ -157,7 +160,7 @@ export function handleSetScaleBackground() {
 	};
 }
 
-export async function handleSaveShortcuts(_e: any, args: Partial<SettingInterface['shortcuts']>) {
+export async function handleSaveShortcuts(_e: unknown, args: Partial<SettingInterface['shortcuts']>) {
 	const settingsPath = path.join(app.getPath('userData'), 'config', 's.bak');
 	const data = (await readJsonFile<SettingInterface>(settingsPath)) || CACHE.settings;
 	data.shortcuts = { ...data.shortcuts, ...args };
@@ -165,7 +168,7 @@ export async function handleSaveShortcuts(_e: any, args: Partial<SettingInterfac
 	return data;
 }
 
-export async function handleOpenShortcutApp(_e: any, { path: filePath }: { path: string }) {
+export async function handleOpenShortcutApp(_e: unknown, { path: filePath }: { path: string }) {
 	if (filePath.includes('.exe')) exec(filePath, err => err && console.error('❌ exec error:', err));
 	else await shell.openPath(filePath);
 	return true;

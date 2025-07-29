@@ -138,7 +138,7 @@ export interface IpcBodyInterface {
 
 	/** Xoá thumbnail cho shortcut */
 	deleteShortcutMedia: {
-		id: string;
+		location: string;
 	};
 
 	/** Lấy danh sách video */

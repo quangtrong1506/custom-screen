@@ -35,7 +35,17 @@ export function ListShortcut() {
 	});
 
 	const gridRef = useRef(null);
-	const saveShortcutToLocal = ({ ...args }) => {
+	const saveShortcutToLocal = ({
+		...args
+	}: {
+		screen?: number;
+		layout?: Layout[];
+		items?: ShortcutInterface[];
+		scale?: number;
+		cols?: number;
+		rows?: number;
+		show?: boolean;
+	}) => {
 		sendIpcInvike('saveShortcuts', args)
 			.then(data => console.log(data))
 			.catch(err => console.log(err));
@@ -151,7 +161,7 @@ export function ListShortcut() {
 		saveShortcutToLocal({ layout: newLayout, items: newItems });
 		const oldItem = shortcutConfig.items.find(item => item.id === id);
 		sendIpcInvike('deleteShortcutMedia', {
-			path: oldItem?.icon || ''
+			location: oldItem?.icon || ''
 		})
 			.then(() => {})
 			.catch(e => {

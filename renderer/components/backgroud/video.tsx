@@ -2,10 +2,10 @@
 import { useEffect, useRef } from 'react';
 import { sendIPC, useIPCKey } from '../../hooks';
 import { eventBus } from '../../libs';
-import { IpcKey, IPCResponseInterface } from '../../shared';
+import { IPCResponseInterface } from '../../shared';
 
 export function Video() {
-	const ipcResponse = useIPCKey<IPCResponseInterface['getBackground']>(IpcKey.getBackground);
+	const ipcResponse = useIPCKey<IPCResponseInterface['getBackground']>('getBackground');
 	const videoRef = useRef<HTMLVideoElement>(null);
 	useEffect(() => {
 		sendIPC('getBackground', null);

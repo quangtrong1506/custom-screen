@@ -19,7 +19,7 @@ const SettingShortcutPage = () => {
 	}>({ scale: 1, items: [], show: true, layout: [] });
 
 	useEffect(() => {
-		sendIpcInvike('getShortcuts', {})
+		sendIpcInvike('getShortcuts', null)
 			.then((data: unknown) => {
 				console.log(data);
 				if (!data) return;
@@ -50,7 +50,10 @@ const SettingShortcutPage = () => {
 			.then(data => console.log(data))
 			.catch(err => console.log(err));
 		const shortcutItem = config.items.find(item => item.id === id);
-		sendIpcInvike('deleteShortcutMedia', shortcutItem && shortcutItem.icon ? { path: shortcutItem.icon } : {})
+		sendIpcInvike(
+			'deleteShortcutMedia',
+			shortcutItem && shortcutItem.icon ? { location: shortcutItem.icon } : { location: '' }
+		)
 			.then(() => {})
 			.catch(e => {
 				console.log(e);

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { IpcBodyInterface, IpcKey, IPCResponseInterface } from '../shared/respon-ipc';
 
-export function useIPCKey<K>(key: (typeof IpcKey)[keyof typeof IpcKey]): K | null {
+export function useIPCKey<K>(key: keyof typeof IpcKey): K | null {
 	const [value, setValue] = useState<K | null>(null);
 
 	useEffect(() => {
