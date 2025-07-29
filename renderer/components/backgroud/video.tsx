@@ -2,13 +2,13 @@
 import { useEffect, useRef } from 'react';
 import { sendIPC, useIPCKey } from '../../hooks';
 import { eventBus } from '../../libs';
+import { IPCResponseInterface } from '../../shared';
 
 export function Video() {
-	const ipc = useIPCKey<string>('get-background') || '';
+	const ipcResponse = useIPCKey<IPCResponseInterface['getBackground']>('getBackground');
 	const videoRef = useRef<HTMLVideoElement>(null);
-
 	useEffect(() => {
-		sendIPC('get-background', null);
+		sendIPC('getBackground', null);
 		const handlePlay = (check: boolean) => {
 			if (videoRef.current) {
 				if (check) {
@@ -26,12 +26,21 @@ export function Video() {
 
 	useEffect(() => {
 		if (videoRef.current) videoRef.current.load();
-	}, [ipc]);
+	}, [ipcResponse]);
 
 	return (
 		<div className="flex h-full w-full items-center justify-center">
-			<video id="bg-main" className="h-full w-full object-cover" autoPlay loop muted ref={videoRef}>
-				<source src={ipc} type="video/mp4" />
+			<video
+				id="bg-main"
+				className={`h-full w-full object-cover ${ipcResponse?.type === 'auto' ? 'object-center' : ''}${
+					ipcResponse?.type === 'cover' ? 'object-cover' : ''
+				}${ipcResponse?.type === 'contain' ? 'object-contain' : ''}`}
+				autoPlay
+				loop
+				muted
+				ref={videoRef}
+			>
+				<source src={ipcResponse?.video.location} type="video/mp4" />
 			</video>
 		</div>
 	);

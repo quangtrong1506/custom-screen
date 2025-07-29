@@ -77,8 +77,8 @@ export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
 
 	function handleDoubleClick() {
 		cancelHold();
-		sendIpcInvike('open-shortcut-app', {
-			path: item?.path
+		sendIpcInvike('openShortcutApp', {
+			path: item?.path || ''
 		})
 			.then(() => {})
 			.catch(() => {

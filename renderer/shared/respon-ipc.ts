@@ -1,3 +1,6 @@
+import { Layout } from 'react-grid-layout';
+import { ShortcutInterface } from '../components/shortcut/item/type';
+
 export const IpcKey = {
 	/** Đẩy video vào backend */
 	uploadVideo: 'UPLOAD_VIDEO',
@@ -50,7 +53,9 @@ export interface IPCResponseInterface {
 	deleteVideo: boolean | string;
 
 	/** Đẩy thumbnail cho shortcut */
-	uploadShortcutMedia: boolean | string;
+	uploadShortcutMedia: {
+		location: string;
+	};
 
 	/** Xoá thumbnail cho shortcut */
 	deleteShortcutMedia: boolean | string;
@@ -82,9 +87,9 @@ export interface IPCResponseInterface {
 	/** Lấy danh sách shortcut */
 	getShortcuts: {
 		scale: number;
-		items: unknown;
+		items: ShortcutInterface[];
 		show: boolean;
-		layout: unknown;
+		layout: Layout[];
 	};
 
 	/** set zoom cho shortcut */
@@ -131,6 +136,7 @@ export interface IpcBodyInterface {
 	uploadShortcutMedia: {
 		id: string;
 		media: {
+			name?: string;
 			path?: string;
 			buffer?: Buffer<ArrayBuffer>;
 		};
@@ -155,10 +161,20 @@ export interface IpcBodyInterface {
 	getShortcuts: null;
 
 	/** set zoom cho shortcut */
-	setScaleBackground: number;
+	setScaleBackground: {
+		scale: number;
+	};
 
 	/** Lưu các shortcut */
-	saveShortcuts: 'SAVE_SHORTCUTS';
+	saveShortcuts: {
+		screen?: number;
+		layout?: Layout[];
+		items?: ShortcutInterface[];
+		scale?: number;
+		cols?: number;
+		rows?: number;
+		show?: boolean;
+	};
 
 	/** Mở ứng dụng shortcut */
 	openShortcutApp: {

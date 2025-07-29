@@ -1,20 +1,14 @@
 ## 1.0.30 (2025-07-28)
 
-
 ### Features
 
-* restore issue templates for bug reports and feature requests ([55a020a](https://github.com/quangtrong1506/custom-screen/commit/55a020a1b50baae64441c040563171d42e719975))
-
-
+- restore issue templates for bug reports and feature requests ([55a020a](https://github.com/quangtrong1506/custom-screen/commit/55a020a1b50baae64441c040563171d42e719975))
 
 ## 1.0.29 (2025-07-28)
 
-
 ### Features
 
-* enhance release workflow with linting, changelog management, and improved tagging ([fa0fa8d](https://github.com/quangtrong1506/custom-screen/commit/fa0fa8d7064b59f3e38c532674890e35f6bbb76d))
-
-
+- enhance release workflow with linting, changelog management, and improved tagging ([fa0fa8d](https://github.com/quangtrong1506/custom-screen/commit/fa0fa8d7064b59f3e38c532674890e35f6bbb76d))
 
 ## [1.0.28](https://github.com/quangtrong1506/custom-screen/compare/v1.0.27...v1.0.28) (2025-07-28)
 

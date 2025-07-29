@@ -1,40 +1,37 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { ZoomPopup } from '../../_common';
-import { FaPause, FaPlay } from 'react-icons/fa6';
-import { sendIPC, sendIpcInvike, useIPCKey } from '../../../hooks';
-import { showPromiseToast } from '../../../helpers';
-import Swal from 'sweetalert2';
 import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { FaPause, FaPlay } from 'react-icons/fa6';
+import Swal from 'sweetalert2';
 import { Routes } from '../../../config';
+import { showPromiseToast } from '../../../helpers';
+import { sendIPC, sendIpcInvike, useIPCKey } from '../../../hooks';
+import { ZoomPopup } from '../../_common';
 
 interface VideoPreviewProps {
-	src?: string;
+	id: string;
+	location?: string;
 	name?: string;
-	type?: string;
+	isDefault?: boolean;
 }
 
 /** Video preview để set nền */
 
-export const VideoPreview: React.FC<VideoPreviewProps> = ({ src, name, type }) => {
+export const VideoPreview: React.FC<VideoPreviewProps> = ({ id, isDefault, location }) => {
 	const router = useRouter();
 	const [open, setOpen] = useState<boolean>(false);
 	const [position, setPosition] = useState<[number, number]>([0, 0]);
 	const [play, setPlay] = useState<boolean>(false);
 	const videoRef = useRef<HTMLVideoElement>(null);
-	const videoBgCurrent = useIPCKey<string>('get-background');
+	const videoBgCurrent = useIPCKey<string>('getBackground') || '';
 
 	useEffect(() => {
-		sendIPC('get-background', null);
+		sendIPC('getBackground', null);
 	}, []);
 
 	function handleSetBackground() {
-		sendIpcInvike('set-background', {
-			fileName: name,
-			path: src,
-			type
-		}).then(() => {
+		sendIpcInvike('setBackgroundVideo', { id }).then(() => {
 			Swal.fire({
 				title: 'Đã đặt video nền',
 				icon: 'success',
@@ -69,14 +66,12 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({ src, name, type }) =
 		setOpen(false);
 
 		setTimeout(() => {
-			if (videoBgCurrent === src) {
-				sendIpcInvike('set-background', { type: 'default' });
+			if (videoBgCurrent === location) {
+				sendIpcInvike('setBackgroundVideo', { id });
 			}
 
-			const promise = sendIpcInvike('delete-video', {
-				fileName: name,
-				path: src,
-				type
+			const promise = sendIpcInvike('deleteVideo', {
+				id
 			});
 			showPromiseToast(promise, {
 				success: 'Đã xóa video nền',
@@ -88,17 +83,19 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({ src, name, type }) =
 
 	return (
 		<>
-			<video
-				onClick={e => {
-					setOpen(true);
-					setPosition([e.clientX, e.clientY]);
-					setTimeout(() => {
-						videoRef.current?.play();
-					}, 300);
-				}}
-				className="rounded-lg"
-				src={src}
-			></video>
+			<div className="relative flex aspect-video cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-black">
+				<video
+					onClick={e => {
+						setOpen(true);
+						setPosition([e.clientX, e.clientY]);
+						setTimeout(() => {
+							videoRef.current?.play();
+						}, 300);
+					}}
+					className="h-full w-full object-contain"
+					src={location}
+				></video>
+			</div>
 
 			<ZoomPopup
 				height={150}
@@ -115,7 +112,7 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({ src, name, type }) =
 						muted
 						autoPlay
 						ref={videoRef}
-						src={src}
+						src={location}
 						onClick={e => e.stopPropagation()}
 						onPlay={() => setPlay(true)}
 						onPause={() => setPlay(false)}
@@ -145,7 +142,7 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({ src, name, type }) =
 						<div className="cursor-pointer text-sm text-white" onClick={handleSetBackground}>
 							Đặt làm video nền
 						</div>
-						{type === 'upload' && (
+						{!isDefault && (
 							<div className="cursor-pointer text-sm text-white" onClick={handleDelete}>
 								Xóa
 							</div>

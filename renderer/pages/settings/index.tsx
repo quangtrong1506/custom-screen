@@ -11,7 +11,7 @@ export default function SettingPage() {
 		platform: ''
 	});
 	useEffect(() => {
-		sendIpcInvike('get-app-info', null)
+		sendIpcInvike('getAppInfo', null)
 			.then(data => {
 				if (!data) return;
 				setAppInfo(data as { version: string; name: string; platform: string });
@@ -39,17 +39,15 @@ export default function SettingPage() {
 							<button
 								className="px-3 py-1 text-blue-500"
 								onClick={() => {
-									sendIpcInvike('check-for-update', null)
+									sendIpcInvike('checkForUpdate', null)
 										.then(data => {
 											if (data) {
-												const { updateInfo } = data as {
-													updateInfo: { version: string };
-												};
-												if (updateInfo.version !== appInfo.version)
+												if (data.version !== appInfo.version)
 													showToast(
-														`Đã có phiên bản mới (${updateInfo?.version}) Hệ thống sẽ tự động cập nhật`,
+														`Đã có phiên bản mới (${data.version}) Hệ thống sẽ tự động cập nhật`,
 														'success'
 													);
+												else showToast('Không có bản cập nhật mới', 'info');
 											} else showToast('Không có bản cập nhật', 'info');
 										})
 										.catch(err => console.log(err));

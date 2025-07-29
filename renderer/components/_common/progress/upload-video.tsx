@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { UploadWorkItem, WorkInterface } from './item';
-import { eventBus } from '../../../libs';
 import { sendIPC } from '../../../hooks';
+import { eventBus } from '../../../libs';
+import { UploadWorkItem, WorkInterface } from './item';
 
 export function UploadImages() {
 	const [works, setWorks] = useState<WorkInterface[]>([]);
@@ -60,7 +60,7 @@ export function UploadImages() {
 						: it
 				)
 			);
-			sendIPC('get-videos', null);
+			sendIPC('getVideoList', null);
 
 			// Xóa sau 3s nếu xong hết
 			if (progress === 100) {
@@ -86,7 +86,7 @@ export function UploadImages() {
 				};
 			})
 		);
-		sendIPC('upload-video', {
+		sendIPC('uploadVideo', {
 			id,
 			list
 		});

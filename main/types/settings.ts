@@ -1,7 +1,9 @@
 export interface SettingInterface {
 	background: {
 		type: 'auto' | 'cover' | 'contain';
-		src: string;
+		video: {
+			location: string;
+		};
 	};
 	shortcuts: {
 		items: string[];

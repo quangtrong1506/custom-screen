@@ -1,9 +1,9 @@
-import { autoUpdater } from 'electron-updater';
 import { ipcMain } from 'electron';
+import { autoUpdater } from 'electron-updater';
+import { IpcKey } from '../../types';
 import { log } from '../dev-log';
 import { sendWebContents } from '../web-contents';
 import { showNativeNotification } from './notifications';
-import { IpcKey } from '../../types';
 
 autoUpdater.setFeedURL({
 	provider: 'github',
@@ -26,7 +26,7 @@ function setupAutoUpdater(mainWindow: Electron.BrowserWindow, callbackDownload?:
 
 	autoUpdater.on('update-available', info => {
 		log.info('🆕 Có bản cập nhật mới:', info.version);
-		sendWebContents(mainWindow, 'update', {
+		sendWebContents(mainWindow, 'checkForUpdate', {
 			new: true,
 			data: info
 		});
@@ -34,7 +34,7 @@ function setupAutoUpdater(mainWindow: Electron.BrowserWindow, callbackDownload?:
 
 	autoUpdater.on('error', err => {
 		log.error('❌ Lỗi cập nhật:', err);
-		sendWebContents(mainWindow, 'update', {
+		sendWebContents(mainWindow, 'checkForUpdate', {
 			error: err.message,
 			data: err
 		});
@@ -43,7 +43,7 @@ function setupAutoUpdater(mainWindow: Electron.BrowserWindow, callbackDownload?:
 	autoUpdater.on('update-downloaded', info => {
 		callbackDownload?.();
 		log.info('✅ Đã tải xong cập nhật, sẽ cài đặt khi thoát...');
-		sendWebContents(mainWindow, 'update', {
+		sendWebContents(mainWindow, 'checkForUpdate', {
 			confirm: true,
 			data: {
 				messenger: `Đã có cập nhật phiên bản mới (${info.version})`,

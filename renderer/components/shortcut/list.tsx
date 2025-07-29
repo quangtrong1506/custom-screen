@@ -35,8 +35,18 @@ export function ListShortcut() {
 	});
 
 	const gridRef = useRef(null);
-	const saveShortcutToLocal = ({ ...args }) => {
-		sendIpcInvike('save-shortcuts', args)
+	const saveShortcutToLocal = ({
+		...args
+	}: {
+		screen?: number;
+		layout?: Layout[];
+		items?: ShortcutInterface[];
+		scale?: number;
+		cols?: number;
+		rows?: number;
+		show?: boolean;
+	}) => {
+		sendIpcInvike('saveShortcuts', args)
 			.then(data => console.log(data))
 			.catch(err => console.log(err));
 	};
@@ -47,7 +57,7 @@ export function ListShortcut() {
 			if (e.key === '=') {
 				setShortcutConfig(prev => {
 					const newScale = prev.scale + 0.2 > 2 ? 2 : prev.scale + 0.2;
-					sendIPC('set-scale-background', {
+					sendIPC('setScaleBackground', {
 						scale: newScale
 					});
 					return { ...prev, scale: newScale };
@@ -56,7 +66,7 @@ export function ListShortcut() {
 			if (e.key === '-') {
 				setShortcutConfig(prev => {
 					const newScale = prev.scale - 0.2 < 1 ? 1 : prev.scale - 0.2;
-					sendIPC('set-scale-background', {
+					sendIPC('setScaleBackground', {
 						scale: newScale
 					});
 					return { ...prev, scale: newScale };
@@ -94,7 +104,7 @@ export function ListShortcut() {
 		};
 
 		const getData = async () => {
-			sendIpcInvike('get-shortcuts', null)
+			sendIpcInvike('getShortcuts', null)
 				?.then((data: unknown) => {
 					const parsedData = data as {
 						scale: number;
@@ -150,8 +160,8 @@ export function ListShortcut() {
 		}));
 		saveShortcutToLocal({ layout: newLayout, items: newItems });
 		const oldItem = shortcutConfig.items.find(item => item.id === id);
-		sendIpcInvike('delete-shortcut-media', {
-			path: oldItem?.icon || ''
+		sendIpcInvike('deleteShortcutMedia', {
+			location: oldItem?.icon || ''
 		})
 			.then(() => {})
 			.catch(e => {
