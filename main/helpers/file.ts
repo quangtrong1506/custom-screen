@@ -1,5 +1,5 @@
 import { app } from 'electron';
-import { mkdir, copyFile as fsCopyFile, readdir, readFile, writeFile } from 'fs/promises';
+import { copyFile as fsCopyFile, mkdir, readdir, readFile, writeFile } from 'fs/promises';
 import path from 'path';
 import { log } from './dev-log';
 
@@ -15,7 +15,7 @@ export async function copyFile(srcPath: string, destPath: string): Promise<boole
 }
 
 export const getListVideos = async () => {
-	const folderPath = path.join(app.getPath('userData'), 'videos');
+	const folderPath = path.join(app.getPath('userData'), 'media', 'videos');
 	try {
 		const files = await readdir(folderPath);
 		return files;

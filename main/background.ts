@@ -1,9 +1,8 @@
-import path from 'path';
+import 'dotenv/config';
 import { app, screen } from 'electron';
 import serve from 'electron-serve';
-import { connectIpcMain, createTray, createWindow, setupAutoUpdater } from './helpers';
-import 'dotenv/config';
-import { log } from './helpers';
+import path from 'path';
+import { connectIpcMain, createTray, createWindow, initApp, log, setupAutoUpdater } from './helpers';
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -39,6 +38,7 @@ app.setName('Live wallpaper for Windows');
 		maximizable: true,
 		frame: false
 	});
+	initApp();
 
 	// (mainWindow as any).setAlwaysOnBottom(true);
 

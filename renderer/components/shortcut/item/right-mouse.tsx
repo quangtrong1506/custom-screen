@@ -25,7 +25,7 @@ export function RightMenu({ open, onClose, item, onDelete }: RightMenuProps) {
 
 	const handleOpenShortcut = async () => {
 		onClose?.();
-		sendIpcInvike('open-shortcut-app', {
+		sendIpcInvike('openShortcutApp', {
 			path: item?.path
 		})
 			.then(() => {})

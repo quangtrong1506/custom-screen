@@ -29,7 +29,7 @@ export function RightMenu({ open, onClose, position }: RightMenuProps) {
 	};
 
 	useEffect(() => {
-		sendIpcInvike('get-shortcuts', null)
+		sendIpcInvike('getShortcuts', null)
 			.then((data: unknown) => {
 				console.log(data);
 				const dataParse = data as {
@@ -79,7 +79,7 @@ export function RightMenu({ open, onClose, position }: RightMenuProps) {
 				<div
 					className="cursor-pointer px-3 py-1 hover:bg-black/5"
 					onClick={() => {
-						sendIPC('close-main-window', null);
+						sendIPC('closeMainWindow', null);
 					}}
 				>
 					Đóng nền

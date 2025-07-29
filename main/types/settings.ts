@@ -1,7 +1,11 @@
 export interface SettingInterface {
 	background: {
 		type: 'auto' | 'cover' | 'contain';
-		src: string;
+		video: {
+			location: string;
+			thumbnail?: string;
+			isDefault?: boolean;
+		};
 	};
 	shortcuts: {
 		items: string[];

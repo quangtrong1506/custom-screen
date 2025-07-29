@@ -50,7 +50,7 @@ const FormShortcut = ({ defaultValue, onClose }: FormShortcutProps) => {
 		if (icon && typeof icon !== 'string') {
 			const arrayBuffer = await icon.arrayBuffer();
 			let buffer = Buffer.from(arrayBuffer);
-			let res = (await sendIpcInvike('upload-shortcut-media', {
+			let res = (await sendIpcInvike('uploadShortcutMedia', {
 				fileName: Math.random().toString().slice(2) + '.png',
 				buffer
 			})) as { path: string };

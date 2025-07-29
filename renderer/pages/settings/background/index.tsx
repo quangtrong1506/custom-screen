@@ -1,29 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import { UploadVideo, VideoPreview } from '../../../components';
-import { sendIPC, useIPCKey } from '../../../hooks';
 import { useEffect } from 'react';
+import { UploadVideo, VideoPreview } from '../../../components';
 import { Routes } from '../../../config';
+import { sendIPC, useIPCKey } from '../../../hooks';
+import { IPCResponseInterface } from '../../../shared';
 
 /**
  * Trang chỉnh sửa cài đặt shortcut
  */
 const SettingShortcutPage = () => {
-	const listVideos = useIPCKey<{
-		list: {
-			name: string;
-			path: string;
-			type: string;
-		}[];
-		total: number;
-	}>('get-videos');
-	const videoBgCurrent = useIPCKey<string>('get-background');
-	console.log(videoBgCurrent);
+	const listVideos = useIPCKey<IPCResponseInterface['getVideoList']>('getVideoList');
+	console.log(listVideos);
 
 	useEffect(() => {
-		sendIPC('get-videos', null);
-		sendIPC('get-background', null);
+		sendIPC('getVideoList', null);
+		sendIPC('getBackground', null);
 	}, []);
 
 	return (
@@ -40,7 +33,13 @@ const SettingShortcutPage = () => {
 				<div className="mt-3 grid grid-cols-4 gap-3">
 					<UploadVideo />
 					{listVideos?.list?.map(item => (
-						<VideoPreview key={item.name} src={item.path} name={item.name} type={item.type} />
+						<VideoPreview
+							id={item.id}
+							key={item.name}
+							location={item.location}
+							name={item.name}
+							isDefault={item.isDefault}
+						/>
 					))}
 				</div>
 			</div>

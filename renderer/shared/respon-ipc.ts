@@ -1,3 +1,6 @@
+import { Layout } from 'react-grid-layout';
+import { ShortcutInterface } from '../components/shortcut/item/type';
+
 export const IpcKey = {
 	/** Đẩy video vào backend */
 	uploadVideo: 'UPLOAD_VIDEO',
@@ -82,9 +85,9 @@ export interface IPCResponseInterface {
 	/** Lấy danh sách shortcut */
 	getShortcuts: {
 		scale: number;
-		items: unknown;
+		items: ShortcutInterface[];
 		show: boolean;
-		layout: unknown;
+		layout: Layout[];
 	};
 
 	/** set zoom cho shortcut */
