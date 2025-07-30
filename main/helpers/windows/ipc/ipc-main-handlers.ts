@@ -90,7 +90,9 @@ export async function handleUploadMedia(
 		const savePath = path.join(app.getPath('userData'), 'media', 'shortcuts', id + '.png');
 		fs.mkdirSync(path.dirname(savePath), { recursive: true });
 		await fs.promises.writeFile(savePath, Buffer.from(media?.buffer));
-		return savePath.replaceAll('\\', '/');
+		return {
+			location: savePath.replaceAll('\\', '/')
+		};
 	} catch (error) {
 		log.error('Lỗi upload media:', error);
 		return false;

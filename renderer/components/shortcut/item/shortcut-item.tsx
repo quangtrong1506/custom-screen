@@ -95,7 +95,7 @@ export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
 				wrapperRef.current = node;
 			}}
 			id={'shortcut-item-' + item.id}
-			className={`flex h-full w-full select-none flex-col items-center rounded-md px-3 py-2 hover:bg-white/15 dark:hover:bg-black/10 ${className} non-draggable`}
+			className={`flex h-full w-full cursor-pointer select-none flex-col items-center rounded-md px-3 py-2 hover:bg-white/15 dark:hover:bg-black/10 ${className} non-draggable`}
 			onMouseDown={handleMouseDown}
 			onMouseUp={handleMouseUp}
 			onMouseLeave={handleMouseLeave}
