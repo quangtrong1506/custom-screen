@@ -160,12 +160,15 @@ export function handleSetScaleBackground() {
 	};
 }
 
-export async function handleSaveShortcuts(_e: unknown, args: Partial<SettingInterface['shortcuts']>) {
-	const settingsPath = path.join(app.getPath('userData'), 'config', 's.bak');
-	const data = (await readJsonFile<SettingInterface>(settingsPath)) || CACHE.settings;
-	data.shortcuts = { ...data.shortcuts, ...args };
-	await writeJsonFile(settingsPath, data);
-	return data;
+export function handleSaveShortcuts(mainWindow: Electron.BrowserWindow) {
+	return async (_e: unknown, args: Partial<SettingInterface['shortcuts']>) => {
+		const settingsPath = path.join(app.getPath('userData'), 'config', 's.bak');
+		const data = (await readJsonFile<SettingInterface>(settingsPath)) || CACHE.settings;
+		data.shortcuts = { ...data.shortcuts, ...args };
+		await writeJsonFile(settingsPath, data);
+		sendWebContents(mainWindow, 'getShortcuts', data.shortcuts);
+		return data;
+	};
 }
 
 export async function handleOpenShortcutApp(_e: unknown, { path: filePath }: { path: string }) {
@@ -183,5 +186,19 @@ export async function handleGetAppInfo() {
 		name: app.name,
 		version: app.getVersion(),
 		platform: process.platform
+	};
+}
+
+export function handleSetTypeBackground(mainWindow: Electron.BrowserWindow) {
+	return async (_event: unknown, { type }: IpcBodyInterface['setTypeDisplayBackground']) => {
+		const settingsPath = path.join(app.getPath('userData'), 'config', 's.bak');
+		const data = (await readJsonFile<SettingInterface>(settingsPath)) || CACHE.settings;
+		data.background = {
+			...data.background,
+			type
+		};
+		await writeJsonFile(settingsPath, data);
+		sendWebContents(mainWindow, 'getBackground', data.background);
+		return { success: true };
 	};
 }

@@ -6,18 +6,19 @@ import { IPCResponseInterface } from '../../shared';
 
 export function Video() {
 	const ipcResponse = useIPCKey<IPCResponseInterface['getBackground']>('getBackground');
+	const ipcActive = useIPCKey<IPCResponseInterface['checkActiveWindow']>('checkActiveWindow');
 	const videoRef = useRef<HTMLVideoElement>(null);
+	const handlePlay = (check: boolean) => {
+		if (videoRef.current) {
+			if (check) {
+				videoRef.current.play();
+			} else {
+				videoRef.current.pause();
+			}
+		}
+	};
 	useEffect(() => {
 		sendIPC('getBackground', null);
-		const handlePlay = (check: boolean) => {
-			if (videoRef.current) {
-				if (check) {
-					videoRef.current.play();
-				} else {
-					videoRef.current.pause();
-				}
-			}
-		};
 		eventBus.on('play-bg', handlePlay);
 		return () => {
 			eventBus.off('play-bg', handlePlay);
@@ -28,11 +29,15 @@ export function Video() {
 		if (videoRef.current) videoRef.current.load();
 	}, [ipcResponse]);
 
+	useEffect(() => {
+		if (ipcActive === null) return;
+		handlePlay(ipcActive.active);
+	}, [ipcActive]);
 	return (
 		<div className="flex h-full w-full items-center justify-center">
 			<video
 				id="bg-main"
-				className={`h-full w-full object-cover ${ipcResponse?.type === 'auto' ? 'object-center' : ''}${
+				className={`h-full w-full ${ipcResponse?.type === 'auto' ? 'object-cover object-center' : ''}${
 					ipcResponse?.type === 'cover' ? 'object-cover' : ''
 				}${ipcResponse?.type === 'contain' ? 'object-contain' : ''}`}
 				autoPlay
