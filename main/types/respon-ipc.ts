@@ -54,7 +54,11 @@ export interface IPCResponseInterface {
 	deleteVideo: boolean | string;
 
 	/** Đẩy thumbnail cho shortcut */
-	uploadShortcutMedia: boolean | string;
+	uploadShortcutMedia:
+		| {
+				location: string;
+		  }
+		| false;
 
 	/** Xoá thumbnail cho shortcut */
 	deleteShortcutMedia: boolean | string;
