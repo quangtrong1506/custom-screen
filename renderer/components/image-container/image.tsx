@@ -22,11 +22,11 @@ export interface ImageContainerProps {
  */
 export function ImageContainer({ src, alt = '', className = '' }: ImageContainerProps): JSX.Element {
 	return (
-		<div className={`flex aspect-square overflow-hidden rounded-lg w-full items-center justify-center ${className}`}>
+		<div className={`flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg ${className}`}>
 			<Image
 				src={src}
 				alt={alt}
-				className={`w-full h-full object-center object-cover`}
+				className={`h-full w-full object-cover object-center`}
 				width={250}
 				height={250}
 				priority
