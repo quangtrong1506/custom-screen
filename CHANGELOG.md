@@ -1,3 +1,12 @@
+## 1.0.33 (2025-07-30)
+
+
+### Bug Fixes
+
+* reorder class names for improved styling consistency in ImageContainer ([00612b7](https://github.com/quangtrong1506/custom-screen/commit/00612b75137261bcdf112d2da61d382c12333a3a))
+
+
+
 ## 1.0.32 (2025-07-30)
 
 
