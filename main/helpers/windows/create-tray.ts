@@ -1,6 +1,8 @@
-import { Menu, Tray, BrowserWindow, shell, app, nativeImage } from 'electron';
+import { app, BrowserWindow, Menu, nativeImage, shell, Tray } from 'electron';
 import path from 'path';
+import { IPCResponseInterface } from '../../types';
 import { log } from '../dev-log';
+import { sendWebContents } from '../web-contents';
 
 let tray: Tray | null = null;
 
@@ -29,8 +31,18 @@ export function createTray(mainWindow: BrowserWindow): void {
 			}
 		});
 
-		mainWindow.on('show', () => updateTrayMenu(mainWindow));
-		mainWindow.on('hide', () => updateTrayMenu(mainWindow));
+		mainWindow.on('show', () => {
+			updateTrayMenu(mainWindow);
+			sendWebContents(mainWindow, 'checkActiveWindow', {
+				active: true
+			} as IPCResponseInterface['checkActiveWindow']);
+		});
+		mainWindow.on('hide', () => {
+			updateTrayMenu(mainWindow);
+			sendWebContents(mainWindow, 'checkActiveWindow', {
+				active: false
+			});
+		});
 
 		updateTrayMenu(mainWindow); // ✅ init lần đầu
 	} catch (error) {

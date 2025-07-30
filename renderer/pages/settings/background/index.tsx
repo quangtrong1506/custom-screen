@@ -12,7 +12,8 @@ import { IPCResponseInterface } from '../../../shared';
  */
 const SettingShortcutPage = () => {
 	const listVideos = useIPCKey<IPCResponseInterface['getVideoList']>('getVideoList');
-	console.log(listVideos);
+	const bg = useIPCKey<IPCResponseInterface['getBackground']>('getBackground');
+	console.log(listVideos, bg);
 
 	useEffect(() => {
 		sendIPC('getVideoList', null);
@@ -21,7 +22,7 @@ const SettingShortcutPage = () => {
 
 	return (
 		<div className="relative z-10 flex h-screen w-full justify-center bg-gray-50">
-			<div className="mt-6 h-[500px] p-3 text-black/70 lg:w-[800px]">
+			<div className="mt-6 h-[500px] p-3 text-black/70 lg:w-[1000px]">
 				<div className="flex items-center gap-2 text-2xl font-medium">
 					<Link href={Routes.Home}>Màn hình chính</Link>
 					<div>{'>'}</div>
@@ -29,8 +30,21 @@ const SettingShortcutPage = () => {
 					<div>{'>'}</div>
 					<Link href={Routes.SettingsBackground}>Video nền</Link>
 				</div>
-				<div className="mt-6 flex justify-between"></div>
-				<div className="mt-3 grid grid-cols-4 gap-3">
+				<div className="mt-6 flex gap-1">
+					<div>Kiểu hiển thị</div>
+					<select
+						className="cursor-pointer bg-transparent"
+						value={bg?.type}
+						onChange={e => {
+							sendIPC('setTypeDisplayBackground', { type: e.target.value as 'auto' | 'contain' | 'cover' });
+						}}
+					>
+						<option value="auto">Auto</option>
+						<option value="contain">100% dọc</option>
+						<option value="cover">100% ngang</option>
+					</select>
+				</div>
+				<div className="mt-3 grid grid-cols-5 gap-3">
 					<UploadVideo />
 					{listVideos?.list?.map(item => (
 						<VideoPreview

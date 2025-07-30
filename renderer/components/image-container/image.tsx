@@ -47,6 +47,7 @@ export function ImageContainer({ src, alt = '', className = '' }: ImageContainer
 				}`}
 				width={250}
 				height={250}
+				priority
 			/>
 		</div>
 	);

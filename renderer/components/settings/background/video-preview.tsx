@@ -69,7 +69,6 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({ id, isDefault, locat
 			if (videoBgCurrent === location) {
 				sendIpcInvike('setBackgroundVideo', { id });
 			}
-
 			const promise = sendIpcInvike('deleteVideo', {
 				id
 			});

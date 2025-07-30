@@ -4,12 +4,13 @@ import { useEffect, useRef, useState } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
 import { ShortcutItem } from '.';
 import { getNextAvailablePosition } from '../../helpers/grid';
-import { sendIPC, sendIpcInvike } from '../../hooks';
+import { sendIPC, sendIpcInvike, useIPCKey } from '../../hooks';
 import { eventBus } from '../../libs';
 
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import { showToast } from '../../helpers';
+import { IPCResponseInterface } from '../../shared';
 import { ShortcutInterface } from './item/type';
 
 const ITEM_WIDTH = 100;
@@ -33,7 +34,7 @@ export function ListShortcut() {
 		rows: 0,
 		show: true
 	});
-
+	const ipcShortcut = useIPCKey<IPCResponseInterface['getShortcuts']>('getShortcuts');
 	const gridRef = useRef(null);
 	const saveShortcutToLocal = ({
 		...args
@@ -143,8 +144,6 @@ export function ListShortcut() {
 
 	// Lưu layout mỗi khi thay đổi
 	function handleLayoutChange(newLayout: Layout[]) {
-		console.log('handleLayoutChange');
-
 		setShortcutConfig(prev => ({ ...prev, layout: newLayout }));
 		saveShortcutToLocal({ layout: newLayout });
 	}
@@ -169,7 +168,10 @@ export function ListShortcut() {
 				showToast('Lỗi xoá ảnh của shortcut (không quan trọng)', 'error');
 			});
 	};
-	console.log(shortcutConfig);
+	useEffect(() => {
+		if (!ipcShortcut) return;
+		setShortcutConfig(prev => ({ ...prev, show: ipcShortcut.show }));
+	}, [ipcShortcut]);
 
 	if (shortcutConfig.screen === 0 || shortcutConfig.cols < 1 || shortcutConfig.rows < 1 || !shortcutConfig.show)
 		return null;

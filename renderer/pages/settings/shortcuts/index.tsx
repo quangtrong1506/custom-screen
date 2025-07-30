@@ -20,8 +20,7 @@ const SettingShortcutPage = () => {
 
 	useEffect(() => {
 		sendIpcInvike('getShortcuts', null)
-			.then((data: unknown) => {
-				console.log(data);
+			.then(data => {
 				if (!data) return;
 				const dataParse = data as {
 					scale: number;

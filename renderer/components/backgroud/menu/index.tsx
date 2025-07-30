@@ -31,7 +31,6 @@ export function RightMenu({ open, onClose, position }: RightMenuProps) {
 	useEffect(() => {
 		sendIpcInvike('getShortcuts', null)
 			.then((data: unknown) => {
-				console.log(data);
 				const dataParse = data as {
 					scale: number;
 					items: unknown;
@@ -66,7 +65,17 @@ export function RightMenu({ open, onClose, position }: RightMenuProps) {
 				<div className="cursor-pointer px-3 py-1 hover:bg-black/5" onClick={handleCreateShortcut}>
 					Tạo shortcut
 				</div>
-				<div className="cursor-pointer px-3 py-1 hover:bg-black/5">{showShortcut ? 'Ẩn' : 'Hiện'} shortcuts</div>
+				<div
+					className="cursor-pointer px-3 py-1 hover:bg-black/5"
+					onClick={() => {
+						sendIPC('saveShortcuts', {
+							show: !showShortcut
+						});
+						setShowShortcut(!showShortcut);
+					}}
+				>
+					{showShortcut ? 'Ẩn' : 'Hiện'} shortcuts
+				</div>
 				<div
 					className="cursor-pointer px-3 py-1 hover:bg-black/5"
 					onClick={() => router.push(Routes.SettingsBackground)}
