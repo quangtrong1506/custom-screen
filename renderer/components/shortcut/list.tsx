@@ -14,7 +14,7 @@ import { IPCResponseInterface } from '../../shared';
 import { ShortcutInterface } from './item/type';
 
 const ITEM_WIDTH = 100;
-const ITEM_HEIGHT = 110;
+const ITEM_HEIGHT = 120;
 
 export function ListShortcut() {
 	const [shortcutConfig, setShortcutConfig] = useState<{

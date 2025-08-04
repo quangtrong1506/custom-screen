@@ -26,7 +26,10 @@ export function Video() {
 	}, []);
 
 	useEffect(() => {
-		if (videoRef.current) videoRef.current.load();
+		if (videoRef.current) {
+			videoRef.current.load();
+			videoRef.current.play();
+		}
 	}, [ipcResponse]);
 
 	useEffect(() => {
