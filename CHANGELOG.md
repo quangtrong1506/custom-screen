@@ -1,3 +1,12 @@
+## 1.0.35 (2025-08-04)
+
+
+### Bug Fixes
+
+* enhance video playback by automatically playing after loading and adjust font size logic in ShortcutItem ([2c06174](https://github.com/quangtrong1506/custom-screen/commit/2c06174b68d305582cc2a43239bbabeff3cae0e1))
+
+
+
 ## 1.0.34 (2025-07-31)
 
 
