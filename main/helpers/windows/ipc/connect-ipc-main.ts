@@ -13,6 +13,7 @@ import {
 	handleSaveShortcuts,
 	handleSetBackground,
 	handleSetScaleBackground,
+	handleSetTypeBackground,
 	handleUploadMedia,
 	handleUploadVideo
 } from './ipc-main-handlers';
@@ -25,6 +26,8 @@ export function connectIpcMain(mainWindow: Electron.BrowserWindow) {
 	ipcMain.on(IpcKey.setScaleBackground, handleSetScaleBackground());
 	ipcMain.on(IpcKey.closeMainWindow, handleCloseMainWindow(mainWindow));
 	ipcMain.on(IpcKey.getBackground, handleGetBackground(mainWindow));
+	ipcMain.on(IpcKey.setTypeDisplayBackground, handleSetTypeBackground(mainWindow));
+	ipcMain.on(IpcKey.saveShortcuts, handleSaveShortcuts(mainWindow));
 
 	// handle
 	ipcMain.handle(IpcKey.deleteVideo, handleDeleteVideo(mainWindow));
@@ -32,7 +35,7 @@ export function connectIpcMain(mainWindow: Electron.BrowserWindow) {
 	ipcMain.handle(IpcKey.deleteShortcutMedia, handleDeleteMedia);
 	ipcMain.handle(IpcKey.setBackgroundVideo, handleSetBackground(mainWindow));
 	ipcMain.handle(IpcKey.getShortcuts, handleGetShortcuts);
-	ipcMain.handle(IpcKey.saveShortcuts, handleSaveShortcuts);
+	ipcMain.handle(IpcKey.saveShortcuts, handleSaveShortcuts(mainWindow));
 	ipcMain.handle(IpcKey.openShortcutApp, handleOpenShortcutApp);
 	ipcMain.handle(IpcKey.getAppInfo, handleGetAppInfo);
 }

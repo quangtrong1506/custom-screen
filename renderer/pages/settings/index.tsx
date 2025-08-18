@@ -44,7 +44,7 @@ export default function SettingPage() {
 											if (data) {
 												if (data.version !== appInfo.version)
 													showToast(
-														`Đã có phiên bản mới (${data.version}) Hệ thống sẽ tự động cập nhật`,
+														`Đã có phiên bản mới (${data.version || 'DEV'}) Hệ thống sẽ tự động cập nhật`,
 														'success'
 													);
 												else showToast('Không có bản cập nhật mới', 'info');

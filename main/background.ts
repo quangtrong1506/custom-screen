@@ -38,9 +38,9 @@ app.setName('Live wallpaper for Windows');
 		maximizable: true,
 		frame: false
 	});
-	initApp();
+	initApp(mainWindow);
 
-	// (mainWindow as any).setAlwaysOnBottom(true);
+	// mainWindow.setAlwaysOnTop(false, 'torn-off-menu', 0);
 
 	mainWindow.setMenu(null);
 	mainWindow.maximize();

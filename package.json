@@ -68,5 +68,5 @@
 		"version:patch": "standard-version --release-as patch"
 	},
 	"type": "commonjs",
-	"version": "1.0.31"
+	"version": "1.0.36"
 }

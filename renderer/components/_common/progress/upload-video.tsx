@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { sendIPC } from '../../../hooks';
 import { eventBus } from '../../../libs';
+import { IpcBodyInterface } from '../../../shared';
 import { UploadWorkItem, WorkInterface } from './item';
 
 export function UploadImages() {
@@ -77,19 +78,18 @@ export function UploadImages() {
 		setWorks(prev => prev.map(it => (it.id === id ? { ...it, status: 'uploading', progress: 0 } : it)));
 
 		const arrr = Array.from(data);
-		const list = await Promise.all(
-			arrr.map(async it => {
-				const arrayBuffer = await it.arrayBuffer();
-				return {
-					title: it.name,
-					buffer: Buffer.from(arrayBuffer)
-				};
-			})
-		);
-		sendIPC('uploadVideo', {
-			id,
-			list
-		});
+		const list: IpcBodyInterface['uploadVideo']['list'] = [];
+
+		for (const it of arrr) {
+			const arrayBuffer = await it.arrayBuffer(); // load từng file
+			list.push({
+				title: it.name,
+				id: it.name,
+				buffer: Buffer.from(arrayBuffer)
+			});
+		}
+
+		sendIPC('uploadVideo', { id, list });
 	}
 
 	function hideWork(id: string) {

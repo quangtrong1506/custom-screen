@@ -1,3 +1,31 @@
+## 1.0.35 (2025-08-04)
+
+
+### Bug Fixes
+
+* enhance video playback by automatically playing after loading and adjust font size logic in ShortcutItem ([2c06174](https://github.com/quangtrong1506/custom-screen/commit/2c06174b68d305582cc2a43239bbabeff3cae0e1))
+
+
+
+## 1.0.34 (2025-07-31)
+
+
+
+## 1.0.33 (2025-07-30)
+
+
+### Bug Fixes
+
+* reorder class names for improved styling consistency in ImageContainer ([00612b7](https://github.com/quangtrong1506/custom-screen/commit/00612b75137261bcdf112d2da61d382c12333a3a))
+
+
+
+## 1.0.32 (2025-07-30)
+
+
+
+## 1.0.31 (2025-07-29)
+
 ## 1.0.30 (2025-07-28)
 
 ### Features

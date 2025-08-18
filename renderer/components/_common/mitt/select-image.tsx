@@ -9,23 +9,34 @@ interface SelectImageProps {
 	onClose: () => void;
 	onSelect?: (path: string) => void;
 }
-
+interface ImageResponseInterface {
+	total: number;
+	page: number;
+	total_all: number;
+	pages: number;
+	list: {
+		_id: string;
+		location: string;
+		category: string;
+	}[];
+}
 export const SelectImage = ({ open, onClose, onSelect }: SelectImageProps) => {
 	const [cats, setCats] = useState<{ _id: string; name: string }[]>([]);
-	const [images, setImages] = useState<
-		{
-			_id: string;
-			location: string;
-			category: string;
-		}[]
-	>([]);
-	const [imageloading, setImageLoading] = useState(false);
+	const [data, setData] = useState<ImageResponseInterface>({
+		list: [],
+		page: 0,
+		total: 0,
+		pages: 0,
+		total_all: 0
+	});
+	const [imageloading, setImageLoading] = useState(true);
 	const [catLoading, setCatLoading] = useState(true);
 	const [filter, setFilter] = useState({
 		category: '',
 		q: '',
 		page: 1
 	});
+
 	useEffect(() => {
 		fetch('https://mnt-image-for-wallpaper.vercel.app/api/categories')
 			.then(res => res.json())
@@ -43,14 +54,14 @@ export const SelectImage = ({ open, onClose, onSelect }: SelectImageProps) => {
 			...filter,
 			page: filter.page.toString()
 		});
-		console.log(params.toString());
-
 		fetch('https://mnt-image-for-wallpaper.vercel.app/api/images?' + params.toString())
 			.then(res => res.json())
 			.then(res => {
-				console.log(res);
-
-				setImages(res.data?.list);
+				const data: ImageResponseInterface = res.data;
+				if (data) {
+					if (data.page === 1) setData(data);
+					else setData(prev => ({ ...prev, ...data, list: [...prev.list, ...data.list] }));
+				}
 			})
 			.catch(err => console.log(err))
 			.finally(() => setImageLoading(false));
@@ -67,7 +78,7 @@ export const SelectImage = ({ open, onClose, onSelect }: SelectImageProps) => {
 					<div className="sticky top-0">
 						<input
 							value={filter.q}
-							onChange={e => setFilter({ ...filter, q: e.target.value })}
+							onChange={e => setFilter({ ...filter, q: e.target.value, page: 1 })}
 							placeholder="Search"
 							className="w-full rounded-md border border-cyan-500 px-2 py-1 focus-visible:outline-none"
 						/>
@@ -77,9 +88,12 @@ export const SelectImage = ({ open, onClose, onSelect }: SelectImageProps) => {
 						{!catLoading && (
 							<div
 								className="rounded-md px-2 py-1 hover:bg-black/5"
-								onClick={() => setFilter({ ...filter, category: '' })}
+								onClick={() => {
+									setFilter({ ...filter, category: '', page: 1 });
+									setData({ page: 1, total: 0, pages: 0, total_all: 0, list: [] });
+								}}
 							>
-								All
+								Tất cả
 							</div>
 						)}
 
@@ -88,29 +102,43 @@ export const SelectImage = ({ open, onClose, onSelect }: SelectImageProps) => {
 								<div
 									className="cursor-pointer p-2 hover:bg-black/10"
 									key={cat._id}
-									onClick={() => setFilter({ ...filter, category: cat._id })}
+									onClick={() => {
+										setFilter({ ...filter, category: cat._id, page: 1 });
+										setData({ page: 1, total: 0, pages: 0, total_all: 0, list: [] });
+									}}
 								>
 									{cat.name}
 								</div>
 							))}
 					</div>
 				</div>
-				<div className="h-full flex-1 overflow-y-auto p-3">
-					<div className="grid grid-cols-6 gap-2">
+				<div
+					className="h-full flex-1 overflow-y-auto p-3"
+					onScroll={e => {
+						const html = e.target as HTMLDivElement;
+						if (
+							html.clientHeight + html.scrollTop >= html.scrollHeight - 200 &&
+							filter.page < data.pages &&
+							!imageloading
+						) {
+							setFilter(prev => ({ ...prev, page: prev.page + 1 }));
+						}
+					}}
+				>
+					<div className="grid grid-cols-5 gap-2">
+						{data.list?.map(image => (
+							<div
+								className="relative flex aspect-square cursor-pointer items-center justify-center overflow-hidden rounded-md"
+								key={image._id}
+								onClick={() => {
+									onSelect?.(image.location);
+									onClose?.();
+								}}
+							>
+								<AutoImage src={image.location} />
+							</div>
+						))}
 						{imageloading && <div className="">Loading...</div>}
-						{!imageloading &&
-							images?.map(image => (
-								<div
-									className="relative flex aspect-square cursor-pointer items-center justify-center overflow-hidden rounded-md"
-									key={image._id}
-									onClick={() => {
-										onSelect?.(image.location);
-										onClose?.();
-									}}
-								>
-									<AutoImage src={image.location} />
-								</div>
-							))}
 					</div>
 				</div>
 			</div>

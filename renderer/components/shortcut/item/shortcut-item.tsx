@@ -24,11 +24,11 @@ const FONT_SIZE = {
 };
 
 function getFontSize(width: number): string {
-	if (width < 65) return FONT_SIZE[50];
-	if (width < 80) return FONT_SIZE[65];
-	if (width < 90) return FONT_SIZE[80];
-	if (width < 105) return FONT_SIZE[90];
-	if (width < 120) return FONT_SIZE[105];
+	if (width < 80) return FONT_SIZE[50];
+	if (width < 100) return FONT_SIZE[65];
+	if (width < 120) return FONT_SIZE[80];
+	if (width < 135) return FONT_SIZE[90];
+	if (width < 150) return FONT_SIZE[105];
 	return FONT_SIZE[120];
 }
 
@@ -95,7 +95,7 @@ export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
 				wrapperRef.current = node;
 			}}
 			id={'shortcut-item-' + item.id}
-			className={`flex h-full w-full select-none flex-col items-center rounded-md px-3 py-2 hover:bg-white/15 dark:hover:bg-black/10 ${className} non-draggable`}
+			className={`flex w-full cursor-pointer select-none flex-col items-center rounded-md py-2 hover:bg-white/15 dark:hover:bg-black/10 ${className} non-draggable`}
 			onMouseDown={handleMouseDown}
 			onMouseUp={handleMouseUp}
 			onMouseLeave={handleMouseLeave}
@@ -106,11 +106,11 @@ export function ShortcutItem(props: ShortcutItemProps): JSX.Element {
 				setOpen(true);
 			}}
 		>
-			<div className="flex aspect-square w-4/5 items-center justify-center overflow-hidden">
+			<div className="flex aspect-square w-4/5 items-center justify-center">
 				<ImageContainer className="" src={item.icon || '/images/logo.png'} alt={item.title} />
 			</div>
 			<div
-				className="mt-1 line-clamp-2 text-center text-white"
+				className="mt-1 line-clamp-2 px-[2px] text-center text-white "
 				style={{
 					fontSize: getFontSize(width),
 					textShadow: '2px 2px 4px rgba(0, 0, 0, 0.4)'

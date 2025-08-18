@@ -39,7 +39,11 @@ export const IpcKey = {
 	getAppInfo: 'GET_APP_INFO',
 
 	/** Kiểm tra cập nhật */
-	checkForUpdate: 'CHECK_FOR_UPDATE'
+	checkForUpdate: 'CHECK_FOR_UPDATE',
+
+	setTypeDisplayBackground: 'SET_TYPE_DISPLAY_BACKGROUND',
+
+	checkActiveWindow: 'CHECK_ACTIVE_WINDOW'
 };
 
 export interface IPCResponseInterface {
@@ -50,7 +54,11 @@ export interface IPCResponseInterface {
 	deleteVideo: boolean | string;
 
 	/** Đẩy thumbnail cho shortcut */
-	uploadShortcutMedia: boolean | string;
+	uploadShortcutMedia:
+		| {
+				location: string;
+		  }
+		| false;
 
 	/** Xoá thumbnail cho shortcut */
 	deleteShortcutMedia: boolean | string;
@@ -108,6 +116,12 @@ export interface IPCResponseInterface {
 
 	/** Kiểm tra cập nhật */
 	checkForUpdate: { version: string } | null;
+
+	setTypeDisplayBackground: null;
+
+	checkActiveWindow: {
+		active: boolean;
+	};
 }
 
 export interface IpcBodyInterface {
@@ -173,6 +187,12 @@ export interface IpcBodyInterface {
 
 	/** Kiểm tra cập nhật */
 	checkForUpdate: null;
+
+	setTypeDisplayBackground: {
+		type: 'auto' | 'cover' | 'contain';
+	};
+
+	checkActiveWindow: null;
 }
 
 export type IpcKeyInterface = (typeof IpcKey)[keyof typeof IpcKey];
