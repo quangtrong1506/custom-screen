@@ -11,18 +11,18 @@ export function Video() {
 	const isPlayRef = useRef<boolean>(false);
 	const isLeaveRef = useRef<boolean>(false);
 	const leaveTimeRef = useRef<number>(0);
+	const handlePlay = (check: boolean) => {
+		isPlayRef.current = check;
+		if (videoRef.current) {
+			if (check) {
+				videoRef.current.play();
+			} else {
+				videoRef.current.pause();
+			}
+		}
+	};
 	useEffect(() => {
 		sendIPC('getBackground', null);
-		const handlePlay = (check: boolean) => {
-			isPlayRef.current = check;
-			if (videoRef.current) {
-				if (check) {
-					videoRef.current.play();
-				} else {
-					videoRef.current.pause();
-				}
-			}
-		};
 
 		const handleMouseMove = (_e: MouseEvent) => {
 			isLeaveRef.current = false;
