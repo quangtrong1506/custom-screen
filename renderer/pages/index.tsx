@@ -17,6 +17,7 @@ export default function ShortcutGrid(): JSX.Element {
 			e.preventDefault();
 			setRightMenu({ open: true, position: { x: e.clientX, y: e.clientY } });
 		};
+
 		document.body.addEventListener('contextmenu', contextMenu);
 		document.body.addEventListener('mouseleave', mouseLeave);
 
