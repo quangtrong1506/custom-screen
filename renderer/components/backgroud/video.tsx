@@ -8,6 +8,7 @@ export function Video() {
 	const ipcResponse = useIPCKey<IPCResponseInterface['getBackground']>('getBackground');
 	const ipcActive = useIPCKey<IPCResponseInterface['checkActiveWindow']>('checkActiveWindow');
 	const videoRef = useRef<HTMLVideoElement>(null);
+	const menuPauseRef = useRef<boolean>(true);
 	const isPlayRef = useRef<boolean>(false);
 	const isLeaveRef = useRef<boolean>(false);
 	const leaveTimeRef = useRef<number>(0);
@@ -34,23 +35,32 @@ export function Video() {
 		};
 
 		const interval = setInterval(() => {
-			if (isLeaveRef.current && isPlayRef.current && Date.now() - leaveTimeRef.current > 60000) {
+			if (
+				(isLeaveRef.current && isPlayRef.current && Date.now() - leaveTimeRef.current > 60000) ||
+				menuPauseRef.current
+			) {
 				handlePlay(false);
 				return;
 			}
-			if (!isLeaveRef.current && !isPlayRef.current) {
+			if (!isLeaveRef.current && !isPlayRef.current && !menuPauseRef.current) {
 				handlePlay(true);
 				return;
 			}
 		}, 100);
+		const handleIPC = (bool: boolean) => {
+			menuPauseRef.current = bool;
+			if (bool) {
+				handlePlay(false);
+			}
+		};
 
 		document.body.addEventListener('mouseleave', handleMouseLeave);
 		document.body.addEventListener('mousemove', handleMouseMove);
-		eventBus.on('play-bg', handlePlay);
+		eventBus.on('play-bg', handleIPC);
 		return () => {
 			document.body.removeEventListener('mouseleave', handleMouseLeave);
 			document.body.removeEventListener('mousemove', handleMouseMove);
-			eventBus.off('play-bg', handlePlay);
+			eventBus.off('play-bg', handleIPC);
 			clearInterval(interval);
 		};
 	}, []);
