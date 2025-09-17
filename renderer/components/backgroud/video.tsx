@@ -42,7 +42,7 @@ export function Video() {
 				handlePlay(false);
 				return;
 			}
-			if (!isLeaveRef.current && !isPlayRef.current && !menuPauseRef.current) {
+			if (!isLeaveRef.current && !isPlayRef.current && !menuPauseRef.current) {			
 				handlePlay(true);
 				return;
 			}
@@ -61,7 +61,6 @@ export function Video() {
 			document.body.removeEventListener('mouseleave', handleMouseLeave);
 			document.body.removeEventListener('mousemove', handleMouseMove);
 			eventBus.off('play-bg', handleIPC);
-			clearInterval(interval);
 		};
 	}, []);
 
