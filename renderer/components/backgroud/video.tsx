@@ -24,6 +24,19 @@ export function Video() {
 	};
 	useEffect(() => {
 		sendIPC('getBackground', null);
+		setInterval(() => {
+			if (
+				(isLeaveRef.current && isPlayRef.current && Date.now() - leaveTimeRef.current > 60000) ||
+				menuPauseRef.current
+			) {
+				handlePlay(false);
+				return;
+			}
+			if (!isLeaveRef.current && !isPlayRef.current && !menuPauseRef.current) {
+				handlePlay(true);
+				return;
+			}
+		}, 100);
 
 		const handleMouseMove = (_e: MouseEvent) => {
 			isLeaveRef.current = false;
@@ -34,19 +47,6 @@ export function Video() {
 			leaveTimeRef.current = Date.now();
 		};
 
-		const interval = setInterval(() => {
-			if (
-				(isLeaveRef.current && isPlayRef.current && Date.now() - leaveTimeRef.current > 60000) ||
-				menuPauseRef.current
-			) {
-				handlePlay(false);
-				return;
-			}
-			if (!isLeaveRef.current && !isPlayRef.current && !menuPauseRef.current) {			
-				handlePlay(true);
-				return;
-			}
-		}, 100);
 		const handleIPC = (bool: boolean) => {
 			menuPauseRef.current = bool;
 			if (bool) {
