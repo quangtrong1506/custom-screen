@@ -8,10 +8,11 @@ export function Video() {
 	const ipcResponse = useIPCKey<IPCResponseInterface['getBackground']>('getBackground');
 	const ipcActive = useIPCKey<IPCResponseInterface['checkActiveWindow']>('checkActiveWindow');
 	const videoRef = useRef<HTMLVideoElement>(null);
-	const menuPauseRef = useRef<boolean>(true);
-	const isPlayRef = useRef<boolean>(false);
+	const isPlayRef = useRef<boolean>(true);
 	const isLeaveRef = useRef<boolean>(false);
 	const leaveTimeRef = useRef<number>(0);
+	const isUserPauseRef = useRef<boolean>(false);
+
 	const handlePlay = (check: boolean) => {
 		isPlayRef.current = check;
 		if (videoRef.current) {
@@ -22,17 +23,20 @@ export function Video() {
 			}
 		}
 	};
+
 	useEffect(() => {
 		sendIPC('getBackground', null);
 		setInterval(() => {
-			if (
-				(isLeaveRef.current && isPlayRef.current && Date.now() - leaveTimeRef.current > 60000) ||
-				menuPauseRef.current
-			) {
+			if (isUserPauseRef.current) {
 				handlePlay(false);
 				return;
 			}
-			if (!isLeaveRef.current && !isPlayRef.current && !menuPauseRef.current) {
+
+			if (isLeaveRef.current && isPlayRef.current && Date.now() - leaveTimeRef.current > 60000) {
+				handlePlay(false);
+				return;
+			}
+			if (!isLeaveRef.current && !isPlayRef.current) {
 				handlePlay(true);
 				return;
 			}
@@ -48,7 +52,7 @@ export function Video() {
 		};
 
 		const handleIPC = (bool: boolean) => {
-			menuPauseRef.current = bool;
+			isUserPauseRef.current = !bool;
 			if (bool) {
 				handlePlay(false);
 			}
